@@ -1,4 +1,3 @@
-
 # 配置方式一：虚拟主机的配置
 
 <VirtualHost *:443>
@@ -37,6 +36,7 @@
 </VirtualHost>
 
 # 配置方式二：直接增加在conf.d增加trac.conf，内容如下：
+
 <IfModule mod_fcgid.c>
     AddHandler fcgid-script .fcgi
     FcgidIPCDir /tmp/fcgid_sock/
