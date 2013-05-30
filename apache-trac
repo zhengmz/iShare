@@ -1,0 +1,86 @@
+1. install trac
+   a. install python2.6
+   b. install setuptool, so we can use "easy_install" command.
+   c. install Genshi, using "easy_install Genshi"
+   d. install trac, using "easy_install trac"
+
+2. initenv a project
+   trac-admin /opt/trac/svnproj initenv
+
+3. Running Trac on a Web Server
+   a. install FastCGI: mod_fcgid is good.
+
+   b. Generating the Trac cgi-bin directory
+      trac-admin /opt/trac/svnproj deploy /tmp/deploy
+      mv /tmp/deploy/* /var/www
+   c. setup the config file trac.conf, like this:
+
+Alias /trac/chrome/common /var/www/trac-htdocs/common
+Alias /trac/chrome/site /var/www/trac-htdocs/site
+
+<Directory "/var/www/trac-htdocs">
+    SetHandler none
+    Order allow,deny
+    Allow from all
+</Directory>
+
+<IfModule mod_fcgid.c>
+    AddHandler fcgid-script .fcgi
+    FcgidIPCDir /tmp/fcgid_sock/
+    FcgidProcessTableFile /tmp/fcgid_shm
+</IfModule>
+
+ScriptAlias /trac /var/www/fcgi-bin/trac.fcgi/
+
+FcgidInitialEnv TRAC_ENV_PARENT_DIR /opt/trac
+
+<LocationMatch "/trac/[^/]+/login">
+   AuthType Basic
+   AuthName "ARCH web Auth"
+   AuthUserFile /opt/web_auth_file
+   Require valid-user
+</LocationMatch>
+
+   d. make sure the Apache user have write permissions
+      chown -R apache.apache /opt/trac
+   e. if using selinux, but do it as below:
+      Step1: chcon -R -t httpd_sys_rw_content_t /opt/trac
+      Step2: semanage fcontext -a -t httpd_sys_rw_content_t "/opt/trac(/.*)?"
+
+4. Granting admin rights to the admin user:
+   trac-admin /opt/trac/svnproj permission add zhengmz TRAC_ADMIN
+
+5. FAQ:
+   Q: (17)File exists: mod_fcgid: Can't create shared memory
+   A: add "SharememPath /tmp/fcgid_shm" to httpd.conf or trac.conf
+
+   Q: (104)Connection reset by peer: mod_fcgid: error reading data from FastCGI server, and Premature end of script headers: trac.fcgi
+   A: The trac.fcgi is error, this file is good, the second blank line is important:
+
+#!/usr/bin/env python
+
+# ---- TRAC.FCGI ----
+# Note: This will work on >=0.9
+
+import os
+
+from trac.web.main import dispatch_request
+try:
+    from flup.server.fcgi import WSGIServer
+except ImportError:
+    from trac.web._fcgi import WSGIServer
+
+if __name__ == '__main__':
+    if 'TRAC_ENV' not in os.environ and \
+       'TRAC_ENV_PARENT_DIR' not in os.environ:
+        os.environ['TRAC_ENV'] = '/opt/trac/svnproj'
+    if 'PYTHON_EGG_CACHE' not in os.environ:
+        if 'TRAC_ENV' in os.environ:
+            egg_cache = os.path.join(os.environ['TRAC_ENV'], '.egg-cache')
+        elif 'TRAC_ENV_PARENT_DIR' in os.environ:
+            egg_cache = os.path.join(os.environ['TRAC_ENV_PARENT_DIR'], \
+                                     '.egg-cache')
+        os.environ['PYTHON_EGG_CACHE'] = egg_cache
+    WSGIServer(dispatch_request).run()
+
+

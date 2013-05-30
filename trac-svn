@@ -1,0 +1,48 @@
+# Setup in trac.ini
+1. enable component to support subversion:
+
+[components]
+tracopt.versioncontrol.svn.* = enabled
+
+2. Specifying repositories
+
+   a) A repository name and one of alias or dir attributes are mandatory. All others are optional.
+
+[repositories]
+main.dir = /opt/svn/svntest
+main.description = This is the ''main'' project repository.
+main.type = svn
+main.url = http://localhost/svn/svntest
+main.hidden = true
+
+lib.dir = /opt/svn/svnlib
+lib.description = This is the secondary library code.
+lib.type = svn
+lib.url = http://localhost/svn/svnlib
+
+.alias = main
+
+   b) After adding a repository, the cache for that repository must be re-synchronized once with the trac-admin $ENV repository resync command.
+
+    trac-admin /opt/trac/svnproj repository resync *
+
+3. Repository synchronization
+   a) Set the [trac] repository_sync_per_request option to an empty value to disable per-request syncing
+   b) adding a call to trac-admin in the post-commit hook of each repository
+
+#!/bin/sh
+export PYTHON_EGG_CACHE="/opt/trac/.egg-cache"
+/usr/bin/trac-admin /opt/trac/svnproj changeset added "$1" "$2"
+
+4. Migration from a single-repository setup (Subversion)
+
+   a) Remove the default repository specification from the [trac] repository_dir option.
+   b) Add the main repository as a named repository.
+   c) Re-synchronize the main repository.
+   d) Set up post-commit and post-revprop-change hooks on the "main" repository, and set [trac] repository_sync_per_request to an empty value.
+   e) Add an alias to the main repository as the default repository (by leaving out the the name, e.g. .alias = main). This ensures that all links predating the migration still resolve to the main repository.
+   f) Repeat steps 2, 3 and 4 to add other "named" repositories as needed.
+
+Reference:
+Repository Administration [http://trac.edgewall.org/wiki/TracRepositoryAdmin]
+Trac and Subversion [http://trac.edgewall.org/wiki/TracSubversion]

@@ -1,0 +1,38 @@
+# Setup in trac.ini
+1. enable component to support subversion:
+
+[components]
+tracopt.versioncontrol.git.* = enabled
+
+2. Specifying repositories
+
+   a) A repository name and one of alias or dir attributes are mandatory. All others are optional.
+
+[repositories]
+main.dir = /opt/git/gittest.git
+main.description = This is the ''main'' project repository.
+main.type = git
+main.url = http://localhost/git/gittest.git
+main.hidden = true
+
+.alias = main
+
+   b) After adding a repository, the cache for that repository must be re-synchronized once with the trac-admin $ENV repository resync command.
+
+    trac-admin /opt/trac/gitproj repository resync main
+
+3. Repository synchronization
+   a) Set the [trac] repository_sync_per_request option to an empty value to disable per-request syncing
+   b) adding a call to trac-admin in the post-commit hook of each repository
+
+#!/bin/sh
+REV=$(git rev-parse HEAD)
+trac-admin /opt/trac/gitproj changeset added (default) $REV
+
+Reference:
+Repository Administration [http://trac.edgewall.org/wiki/TracRepositoryAdmin]
+Git support in Trac [http://trac.edgewall.org/wiki/TracGit]
+
+FAQ:
+Q: ERROR: GIT control files missing in '/opt/git/gittest.git'
+A: if using SELinux, chcon -R -t httpd_sys_rw_content_t git

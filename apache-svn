@@ -1,0 +1,31 @@
+Q: When commit, raise a problem: "Can't open file '/opt/svn/svntest/db/txn-current-lock': Permission denied."
+A: reason: Because Selinux is enforce, so process "httpd" has low permissive.
+   Step1: chcon -R -t httpd_sys_rw_content_t /opt/svn
+   Step2: semanage fcontext -a -t httpd_sys_rw_content_t "/opt/svn(/.*)?"
+   site: SELinux 环境下网络服务设置 , 第 1 部分: 配置 Apache 、Samba、NFS http://www.ibm.com/developerworks/cn/linux/l-cn-selinux-services1/
+   
+Q: How to config svn.conf in /etc/httpd/conf.d
+A: As below:
+
+LoadModule dav_svn_module     modules/mod_dav_svn.so
+LoadModule authz_svn_module   modules/mod_authz_svn.so
+<Location /svn>
+   DAV svn
+
+   SVNParentPath /opt/svn
+   SVNListParentPath On
+
+   AuthType Basic
+   AuthName "ARCH Subversion Repository Auth"
+   AuthUserFile /opt/web_auth_file
+   SVNPathAuthz off
+#   AuthBasicProvider ldap
+#   AuthzLDAPAuthoritative on
+#   AuthLDAPURL "ldap://192.168.2.46:389/DC=cmszmail,DC=ad?sAMAccountName?sub?(objectClass=*)"
+
+   # Limit write permission to list of valid users.
+   <LimitExcept GET PROPFIND OPTIONS REPORT>
+      Require valid-user
+   </LimitExcept>
+</Location>
+CustomLog logs/svn_log "%t %u %{SVN-ACTION}e" env=SVN-ACTION

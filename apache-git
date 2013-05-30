@@ -1,0 +1,37 @@
+0. add a bare git repo:
+   a. mkdir /opt/git/gitest
+   b. cd /opt/git/gitest
+   c. git init --bare
+   d. git update-server-info
+   e. cd /opt/git/gittest/hooks
+   f. cp post-update.sample post-update
+1. comfire apache enable module: mod_dav
+2. Add config into /etc/httpd/conf.d/git.conf, like this:
+	Alias /git /opt/git
+	<Location /opt/git/>
+	   DAV on
+
+	   AuthType Basic
+	   AuthName "ARCH git Repository Auth"
+	   AuthUserFile /opt/web_auth_file
+	   <LimitExcept GET PROPFIND OPTIONS REPORT>
+	      Require valid-user
+	   </LimitExcept>
+	</Location>
+
+   Warning: At the 2nd line, there is very important that the char '/' ending the string "/opt/git/". If not, it will raise some error, like "return error code 22" or "cannot lock info/refs" and so on.
+3. authorization
+   a. su - root
+   b. chown -R apache.arch /opt/git
+   c. if using selinux, but do it as below:
+      Step1: chcon -R -t httpd_git_rw_content_t /opt/git
+      Step2: semanage fcontext -a -t httpd_git_rw_content_t "/opt/git(/.*)?"
+      if will be connected to trac, must be "httpd_sys_rw_content_t"
+
+4. access method
+   method: git clone http://user@ip/git/gittest.git gittest
+
+  if using linux or unix, you can add a file .netrc at $HOME to login automatically, the file .netrc must be:
+	machine www.gitserver.com  
+	login jack  
+	password 123456

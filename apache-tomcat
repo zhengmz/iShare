@@ -1,0 +1,32 @@
+Guidelin: apache connector to tomcat
+
+ref: Apache HTTP Server 与 Tomcat 的三种连接方式介绍 
+website: http://www.ibm.com/developerworks/cn/opensource/os-lo-apache-tomcat/
+
+via mod_proxy:
+1) add a conf file to /etc/httpd/conf.d, example:
+
+	<IfModule mod_proxy.c>  
+		ProxyRequests Off
+
+		<Proxy *>
+			Order deny,allow
+			Allow from all
+		</Proxy>
+
+		#ProxyPassMatch ^/(home|admin|product|monitor)/(.*)$ 　http://localhost:8080
+		ProxyPass /jsp http://localhost:8080
+		#ProxyPassReverse / http://192.168.3.61:8080/
+	</IfModule>
+
+2) set up "SELinux and Apache"
+
+	setsebool -P httpd_can_network_connect 1
+
+   to solve the problem: "(13)Permission denied: proxy: HTTP: attempt to connect to"
+
+3) service httpd restart
+
+maybe:
+
+   run "chkconfig httpd on" to allow the outside visit webserver.
