@@ -20,31 +20,31 @@ Apache + svn + trac 安装与配置
 2. 增加Subversion/bin路径到系统SYSTEM环境变量PATH, 然后重启机器，以便Apache能识别subversion的Dll文件
 3. 修改Apache的配置文件httpd.conf:
 
-  3a. 去掉以下两行的注释:
+  3a. 去掉以下两行的注释: 
 
-    #LoadModule dav_fs_module modules/mod_dav_fs.so
-    #LoadModule dav_module modules/mod_dav.so
+        #LoadModule dav_fs_module modules/mod_dav_fs.so
+        #LoadModule dav_module modules/mod_dav.so
 
   3b. 增加以下两行:
 
-      LoadModule dav_svn_module modules/mod_dav_svn.so
-      LoadModule authz_svn_module modules/mod_authz_svn.so
+        LoadModule dav_svn_module modules/mod_dav_svn.so
+        LoadModule authz_svn_module modules/mod_authz_svn.so
 
   3c. 在文件结尾增加以下内容:
 
-      # Support Subversion config
-      Include conf/extra/mod_svn.conf
+        # Support Subversion config
+        Include conf/extra/mod_svn.conf
 
   3d. 将mod_svn.conf拷贝到Apache安装目录下的conf/extra
 
 4. 创建subversion的库
 
-     svnadmin create e:\svn\svntest
+        svnadmin create e:\svn\svntest
 
 5. 利用htpasswd命令创建密码文件
 
-    htpasswd -cm e:\svn\svn_auth_file harry
-    htpasswd -m e:\svn\svn_auth_file sally
+        htpasswd -cm e:\svn\svn_auth_file harry
+        htpasswd -m e:\svn\svn_auth_file sally
 
 6. 重启Apache
 
@@ -60,8 +60,8 @@ Apache + svn + trac 安装与配置
 
 2. 在Apache配置文件中增加以下内容:
 
-      # Support trac config
-      Include conf/extra/mod_trac.conf
+        # Support trac config
+        Include conf/extra/mod_trac.conf
 
 3. 将mod_trac.conf拷贝到Apache安装目录下的conf/extra
 
@@ -82,28 +82,28 @@ Apache + svn + trac 安装与配置
 
     主页: http://trac-hacks.org/wiki/XmlRpcPlugin
 
-    1a. 解压xmlrpcplugin-r5917.zip
+  1a. 解压xmlrpcplugin-r5917.zip
 
-    1b. cd xmlrpcplugin
+  1b. cd xmlrpcplugin
 
-    1c. 运行命令"C:\Python25\Scripts\easy_install.exe 0.10"
+  1c. 运行命令"C:\Python25\Scripts\easy_install.exe 0.10"
 
-    1d. 为支持trac 0.11，还需安装C:\Python25\Scripts\easy_install.exe trunk
+  1d. 为支持trac 0.11，还需安装C:\Python25\Scripts\easy_install.exe trunk
 
 2.  同样的方法安装eclipsetracplugin_tracrpcext_0.10-r5917.zip
 
 3.  配置trac.ini, 增加以下内容:
 
-    [components]
-    tracrpc.* = enabled
-    tracrpcext.* = enabled
+        [components]
+        tracrpc.* = enabled
+        tracrpcext.* = enabled
 
 4.  在Eclipse3.4安装plugin:  EclipseTrac
     两种方法，一种通过update，一种直接安装
 
-    4a. 通过update的site: http://trac-hacks.org/svn/eclipsetracplugin/eclipse/update/
+  4a. 通过update的site: http://trac-hacks.org/svn/eclipsetracplugin/eclipse/update/
 
-    4b. 直接安装的文件为EclipseTrac.zip
+  4b. 直接安装的文件为EclipseTrac.zip
 
 5. 重启Trac Server和Eclipse
 
