@@ -19,9 +19,6 @@ LoadModule authz_svn_module   modules/mod_authz_svn.so
    AuthName "ARCH Subversion Repository Auth"
    AuthUserFile /opt/web_auth_file
    SVNPathAuthz off
-#   AuthBasicProvider ldap
-#   AuthzLDAPAuthoritative on
-#   AuthLDAPURL "ldap://192.168.2.46:389/DC=cmszmail,DC=ad?sAMAccountName?sub?(objectClass=*)"
 
    # Limit write permission to list of valid users.
    <LimitExcept GET PROPFIND OPTIONS REPORT>
