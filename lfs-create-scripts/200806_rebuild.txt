@@ -1,0 +1,10 @@
+make mrproper   // for init
+make menuconfig
+make
+make modules_install
+cp -v arch/i386/boot/bzImage /boot/lfskernel-2.6.22.5
+cp -v System.map /boot/System.map-2.6.22.5
+cp -v .config /boot/config-2.6.22.5
+
+install -d /usr/share/doc/linux-2.6.22.5 &&
+cp -r Documentation/* /usr/share/doc/linux-2.6.22.5

@@ -1,0 +1,51 @@
+1. 如何设置svn自动属性 
+
+前面提到的文件属性要设置起来通过命令行的方式很麻烦，我们可以通过修改 Subversion的配置文件让Subsersion自动实行上面的操作。 具体做法如下：
+
+修改 home/Subversion/config 文件。  
+
+将 enable-auto-props = yes
+然后添加如下的内容
+
+[auto-props]
+*.java = svn:eol-style=native;svn:keywords=Rev Date
+*.xml = svn:mime-type=text/xml;svn:eol-style=native;svn:keywords=Rev Date
+*.xsl = svn:mime-type=text/xml;svn:eol-style=native;svn:keywords=Rev Date
+*.xsd = svn:mime-type=text/xml;svn:eol-style=native;svn:keywords=Rev Date
+*.xjb = svn:mime-type=text/xml;svn:eol-style=native;svn:keywords=Rev Date
+*.wsdl = svn:mime-type=text/xml;svn:eol-style=native;svn:keywords=Rev Date
+*.properties = svn:mime-type=text/plain;svn:eol-style=native;svn:keywords=Rev Date
+.checkstyle = svn:mime-type=text/xml;svn:eol-style=native;svn:keywords=Rev Date
+.pmd = svn:mime-type=text/xml;svn:eol-style=native;svn:keywords=Rev Date
+.ruleset = svn:mime-type=text/xml;svn:eol-style=native;svn:keywords=Rev Date
+*.c = svn:eol-style=native;svn:keywords=Rev Date
+*.cpp = svn:eol-style=native;svn:keywords=Rev Date
+*.h = svn:eol-style=native;svn:keywords=Rev Date
+*.dsp = svn:eol-style=CRLF
+*.dsw = svn:eol-style=CRLF
+*.sh = svn:eol-style=native;svn:executable
+*.bat = svn:eol-style=native
+*.pl = svn:eol-style=native
+*.py = svn:eol-style=native
+*.cmd = svn:eol-style=native
+*.txt = svn:eol-style=native;svn:mime-type=text/plain
+*.cat = svn:eol-style=native;svn:mime-type=text/plain
+*.htm* = svn:eol-style=native;svn:mime-type=text/html;svn:keywords=Rev Date
+ChangeLog = svn:eol-style=native;svn:mime-type=text/plain
+README* = svn:eol-style=native;svn:mime-type=text/plain
+LICENSE* = svn:eol-style=native;svn:mime-type=text/plain
+NOTICE* = svn:eol-style=native;svn:mime-type=text/plain
+TODO* = svn:eol-style=native;svn:mime-type=text/plain
+KEYS* = svn:eol-style=native;svn:mime-type=text/plain
+INSTALL* = svn:eol-style=native;svn:mime-type=text/plain
+WHATSNEW* = svn:eol-style=native;svn:mime-type=text/plain
+NEWS* = svn:eol-style=native;svn:mime-type=text/plain
+COPYING = svn:eol-style=native;svn:mime-type=text/plain
+*.png = svn:mime-type=image/png
+*.jpg = svn:mime-type=image/jpeg
+*.gif = svn:mime-type=image/gif
+Makefile = svn:eol-style=native
+*.css = svn:eol-style=native
+*.js = svn:eol-style=native
+*.jsx = svn:eol-style=native
+*.cxf = svn:mime-type=text/xml;svn:eol-style=native;svn:keywords=Rev Date 

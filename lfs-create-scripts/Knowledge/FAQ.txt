@@ -1,0 +1,25 @@
+Q: cdrom 和 net 的缺省序号不对时
+A: 检查/etc/udev/rules.d的70-persistent-cd.rules和70-persistent-net.rules
+   可能的原因，是因为硬件发生变化，重新识别出一个新的cd或net，按顺序增加了1.
+
+Q: 如何把根目录也LVM
+A: 首先/boot必须不能使用LVM
+   然后制作一个initrd img来启动LVM，再挂载硬盘的ROOTFS即可，可参见Fedora7中的boot
+
+Q: 将程序安装到特定目录后，如何通过man来查看帮助
+A: 有多种方式：
+   一是将man路径增加到/etc/man_db.conf
+   二是将bin路径增加到PATH中，也能使用
+
+   相似地，lib应该也是如此：/etc/ld.so.conf和LD_LIBRARY_PATH
+
+Q: 如果FTP登录不上
+A: 按以下顺序检查
+   1. 配置是否正确
+   2. 服务是否运行成功
+   3. 如果安装了LinuxPAM, 需检查/etc/pam.d下是否为ftp作好设置
+
+Q: 如果在windows下可识别的网卡，在linux下无法自动识别
+A: 首先用ifconfig或ip addr来检测是否有网卡
+   如果有网卡，但IP不对，检查是否正确配置网卡/etc/sysconfig/network-scripts
+   如果无网卡，可能是在编译网核时，无法检测到，需手工增加对硬件的支持，重新编译即可

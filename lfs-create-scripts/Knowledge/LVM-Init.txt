@@ -1,0 +1,109 @@
+linux lvm init
+
+Linux实践工程师学习笔记九：Raid与Lvm的综合应用实例
+
+要求：使用三个硬盘存储数据，保证数据安全性的同时还能让磁盘根据需要动态的缩放
+设备sdb sdc sdd
+1.将三个硬盘组成RAID5，实现安全性
+2.在阵列md0上创建物理卷，卷组，逻辑卷
+3.将数据转移到逻辑卷
+ 
+具体操作：
+1.fdisk 三个硬盘，分区类型fd,最后得到sdb1,sdc1,sdd1
+2.创建raid设备
+#mdadm –Cv /dev/md0 –l5 –n3 /dev/sd[b,c,d]1
+3.#pvcreate /dev/md0           在阵列上初始化物理卷
+4.#vgcreate vg /dev/md0
+5.#lvcreate –n home –L 100M vg
+#lvcreate –n var –L 100M vg
+#mkfs.ext3 /dev/vg/home
+#mkfs.ext3 /dev/vg/var
+#mkdir /mnt/home
+#mkdir /mnt/var
+#mount /dev/vg/home /mnt/home
+#mount /dev/vg/var /mnt/var
+#cp –a /home/* /mnt/home
+#cp –a /var/*  /mnt/var
+#df –lh
+6.#vi /etc/fstab 添加
+/dev/vg/home         /home     ext3 defaults 0 0
+/dev/vg/var            /var         ext3 defaults 0 0
+7.#vi /etc/mdadm.conf   创建文件，以便系统启动时能够自动识别raid设备，内容如下：
+DEVICE /dev/sdb1 /dev/sdc1 /dev/sdd1 ARRAY /dev/md0 level=raid5 num-devices=3 UUID=123545:erdfj3:dkf3jd
+（UUID具体通过mdadm –D /dev/md0获取）
+或者#vi /etc/rc.sysinit 修改此文件，搜索raid，在它下面添加条命令：raidstart /dev/md0
+8.reboot
+ 
+上面已正确地将数据移植到LVM上，下面将/分区移植到LVM上
+#lvcreate –n root –L 200M vg
+#mkfs.ext3 /dev/vg/root
+#mount /dev/vg/root /mnt
+#cd /mnt
+#mkdir proc tmp var home opt cdrom media mnt srv selinux
+#cd /
+#cp –a bin dev etc lib sbin root usr sys /mnt &
+当操作的过程时间太长，可按ctrl+z，再输入bg,让它后台运行
+技巧：
+#rm –rf /mnt/bin    强行删除目录
+#\ls         不高亮显示
+RAID5的磁盘容量利用率为2/3
+ 
+利用mkinitrd创建一个虚拟的磁盘映像文件
+#mkdir /boot/test
+#mkinitrd –v –preload raid5 –preload lvm-m0d /boot/test/initrd-lvm-$(uname-r)img $(uname –r)
+在里面添加加载根分区所需的raid设备文件，驱动程序，命令mdadm等
+#cd /boot/test
+#mv initrd-lvm-2.6.15-1.2054_FC.img initrd-lvm-2.6.15-1.2054_FC.img.gz
+#gunzip init-lvm-2.6.15-1.2054_FC.img.gz
+#cpio –idv < init-lvm-2.6.15-1.2054_FC.img
+#rm initrd-lvm-2.6.15-1.2054_FC.img
+添加设备文件，复制文件时要注意-a参数
+#cp –a /dev/vg dev
+#cp –a /dev/mapper dev
+#cp –a /dev/md0 dev
+#cp –a /dev/sd[abcd] dev
+#cp –a /dev/sd[abcd]1 dev
+#vi init 添加，一定要在mkblkders后面添加，系统启动后执行的第一个脚本，自动激活磁盘阵列
+       mdadm –As                  
+       vgscan
+       vgchange –a y
+       修改加载的root分区
+       mount –o defaults --ro -t ext3 /dev/vg/root /sysroot
+#cp /sbin/vgscan bin
+#cp /sbin/vgchange bin
+#cp /sbin/mdadm bin
+#ldd bin/mdadm     查看该命令所需的库文件
+#cp /lib/libc.so.6 lib              (字母o)添加命令所需库文件
+#cp /lib/ld-linux.so.1 lib
+上面的mdadm -As会根据配置文件mdadm.conf激活阵列，所以将/etc/mdadm.conf拷过来
+#cp /etc/mdadm.conf etc             （之前已经手工创建了mdadm.conf），添加配置文件
+最后确认/boot/test目录里的文件准备打包
+#cd /boot/test
+#find -print | cpio -oc > /boot/initrd-lvm-$(uname -r).img
+#cd /boot
+#gzip initrd-lvm-2.6.15-1.2054_FC.img -c > init-lvm-2.6.15-1.2054_FC.img.gz
+这样将文件恢复成一个虚拟磁盘映像文件
+ 
+修改引导配置
+#vi /boot/grub/grub.conf
+修改defaults=1
+添加
+title Fedora LVM
+       root (hd0,0)
+       kernel /boot/vmlinuxz-2.6.15-1.2054_FC ro root=/dev/vg/root   
+       和/boot目录里的vmlinuxz对应，注意root=/dev/vg/root的修改
+       initrd /boot/initrd-lvm-2.6.15-1.2054_FC.img.gz
+保存退出
+#mount /dev/vg/root /mnt
+#cd /mnt
+#vi etc/fstab    修改
+/dev/vg/root    /      ext3 defaults   1 1
+这样系统启动就会将/dev/vg/root 作为主分区使用
+完成所有修改
+#reboot
+从启后ls /boot应该没有东西，因为物理boot在sda1分区里
+可以#mount /dev/sda1 /mnt 再看看里面的boot内容
+证明已经成功的转移了根分区，完成了案例提出的要求。
+ 
+在进行这个实验时，主要是对磁盘映像文件的修改，修改init文件时，要注意加载模块的顺序，先创建块设备，才能使用块文件。
+使用mkinitrd创建文件后，要注意用file命令查看文件类型，从而进一步对映像文件进行解压，提取等操作。当修改完磁盘映像文件initrd后，要知道如何打包、压缩。注意如何使用cpio命令。

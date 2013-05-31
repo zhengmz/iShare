@@ -1,0 +1,292 @@
+########################################################
+#
+# Prepare: Install Basic Package.
+#
+########################################################
+
+tar xvf gpm-1.20.1.tar.bz2 &&
+cd gpm-1.20.1 &&
+patch -Np1 -i ../gpm-1.20.1-segfault-1.patch &&
+patch -Np1 -i ../gpm-1.20.1-silent-1.patch &&
+./configure --prefix=/usr --sysconfdir=/etc &&
+LDFLAGS="-lm" make &&
+make install &&
+cp -v conf/gpm-root.conf /etc &&
+ldconfig &&
+cd .. &&
+rm -fr gpm-1.20.1
+cd blfs-bootscripts-20080326 &&
+make install-gpm &&
+cd ..
+cd blf-config-oscar &&
+make install-gpm &&
+cd ..
+
+# Now you can use mouse in the console ...
+
+tar xvf lynx2.8.6rel.5.tar.bz2 &&
+cd lynx2-8-6 &&
+./configure --prefix=/usr \
+            --sysconfdir=/etc/lynx \
+            --datadir=/usr/share/doc/lynx-2.8.6rel.5 \
+            --with-zlib \
+            --with-bzlib \
+            --with-screen=ncursesw \
+            --enable-locale-charset &&
+make &&
+make install-full &&
+chgrp -v -R root /usr/share/doc/lynx-2.8.6rel.5/lynx_doc &&
+cd .. &&
+rm -fr lynx2-8-6
+sed -i 's/#\(LOCALE_CHARSET\):FALSE/\1:TRUE/' /etc/lynx/lynx.cfg &&
+sed -i 's/#\(DEFAULT_EDITOR\):/\1:vi/' /etc/lynx/lynx.cfg &&
+sed -i 's/#\(PERSISTENT_COOKIES\):FALSE/\1:TRUE/' /etc/lynx/lynx.cfg
+
+# Now you can use the text-web brower ...
+
+tar xvf wget-1.10.2.tar.gz &&
+cd wget-1.10.2 &&
+./configure --prefix=/usr --sysconfdir=/etc &&
+make &&
+make install &&
+cd .. &&
+rm -fr wget-1.10.2
+
+# Now you can download the package through by wget ...
+
+tar xvf which-2.19.tar.gz &&
+cd which-2.19 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd .. &&
+rm -fr which-2.19
+
+tar xvf dhcpcd-3.0.19.tar.bz2 &&
+cd dhcpcd-3.0.19 &&
+make &&
+make install &&
+install -m 755 dhcpcd.sh /etc &&
+cd .. &&
+rm -fr dhcpcd-3.0.19
+cd blfs-bootscripts-20080326 &&
+make install-service-dhcpcd &&
+cd ..
+cd blfs-config-oscar &&
+make install-dhcpcd &&
+cd ..
+
+tar xvf tcp_wrappers_7.6.tar.gz &&
+cd tcp_wrappers_7.6 &&
+patch -Np1 -i ../tcp_wrappers-7.6-shared_lib_plus_plus-1.patch &&
+sed -i -e "s,^extern char \*malloc();,/* & */," scaffold.c &&
+make REAL_DAEMON_DIR=/usr/sbin STYLE=-DPROCESS_OPTIONS linux &&
+make install &&
+cd .. &&
+rm -fr tcp_wrappers_7.6
+
+tar xvf whois_4.7.26.tar.gz &&
+cd whois-4.7.26 &&
+make &&
+make prefix=/usr install &&
+cd .. &&
+rm -fr whois-4.7.26
+
+tar xvf net-tools-1.60.tar.bz2 &&
+cd net-tools-1.60 &&
+patch -Np1 -i ../net-tools-1.60-gcc34-3.patch &&
+patch -Np1 -i ../net-tools-1.60-kernel_headers-2.patch &&
+patch -Np1 -i ../net-tools-1.60-mii_ioctl-1.patch &&
+yes "" | make config &&
+sed -i -e 's|HAVE_IP_TOOLS 0|HAVE_IP_TOOLS 1|g' \
+       -e 's|HAVE_MII 0|HAVE_MII 1|g' config.h &&
+sed -i -e 's|# HAVE_IP_TOOLS=0|HAVE_IP_TOOLS=1|g' \
+       -e 's|# HAVE_MII=0|HAVE_MII=1|g' config.make &&
+make &&
+make update &&
+cd .. &&
+rm -fr net-tools-1.60
+
+tar xvf inetutils-1.5.tar.gz &&
+cd inetutils-1.5 &&
+./configure --prefix=/usr \
+            --libexecdir=/usr/sbin \
+            --sysconfdir=/etc \
+            --localstatedir=/var \
+            --disable-whois \
+            --disable-ifconfig \
+            --with-wrap \
+            --disable-logger \
+            --disable-syslogd &&
+make &&
+make install &&
+mv -v /usr/bin/ping{,6} /bin &&
+cd .. &&
+rm -fr inetutils-1.5
+
+tar xvf xinetd-2.3.14.tar.gz &&
+cd xinetd-2.3.14 &&
+./configure --prefix=/usr --with-libwrap --with-loadavg &&
+make &&
+make install &&
+cd .. &&
+rm -fr xinetd-2.3.14
+cd blfs-bootscripts-20080326 &&
+make install-xinetd &&
+cd ..
+cd blfs-config-oscar &&
+make install-xinetd &&
+cd ..
+
+# Now you can telnet the machine, and install package early .
+
+########################################################
+#
+# Part II. Post LFS Configuration and Extra Software
+#
+# Chapter 3. After LFS Configuration Issues
+#
+########################################################
+
+tar xvf deb2targz.tar.bz2 &&
+cd deb2targz &&
+./install &&
+cd .. &&
+rm -fr deb2targz
+
+tar xvf rpm2targz.tar.bz2 &&
+cd rpm2targz &&
+./install &&
+cd .. &&
+rm -fr rpm2targz
+
+tar xvf blfs-config-oscar.tar.gz &&
+cd blfs-config-oscar &&
+make install &&
+cd .. &&
+rm -fr blfs-config-oscar
+
+cd blfs-bootscripts-20080326 &&
+make install-random &&
+cd ..
+install -m 755 compressdoc /usr/sbin
+compressdoc --bz2
+
+tar xvf autofs-5.0.3.tar.bz2 &&
+cd autofs-5.0.3 &&
+for f in `cat ../patch_order-5.0.3`; do
+  patch -Np1 -i ../$f
+done &&
+./configure --prefix=/ --mandir=/usr/share/man &&
+make &&
+make install &&
+ln -sf  ../init.d/autofs /etc/rc.d/rcsysinit.d/S52autofs &&
+cd .. &&
+rm -fr autofs-5.0.3
+mv /etc/auto.master /etc/auto.master.bak &&
+cd blfs-config-oscar &&
+make install-autofs &&
+cd ..
+
+cd blfs-bootscripts-20080326 &&
+make install-netfs &&
+cd ..
+
+########################################################
+#
+# Chapter 4. Security
+#
+########################################################
+
+tar xvf bc-1.06.tar.gz &&
+cd bc-1.06 &&
+sed -i '/PROTO.*readline/d' bc/scan.l &&
+sed -i '/flex -I8/s/8//' configure &&
+sed -i '/stdlib/a #include <string.h>' lib/number.c &&
+sed -i 's/program.*save/static &/' bc/load.c &&
+./configure --prefix=/usr --with-readline &&
+make &&
+echo "quit" | ./bc/bc -l Test/checklib.b &&
+make install &&
+cd .. &&
+rm -fr bc-1.06
+
+tar xvf openssl-0.9.8g.tar.gz &&
+cd openssl-0.9.8g &&
+patch -Np1 -i ../openssl-0.9.8g-fix_manpages-1.patch &&
+./config --openssldir=/etc/ssl --prefix=/usr shared &&
+make MANDIR=/usr/share/man &&
+make test &&
+make MANDIR=/usr/share/man install &&
+cp -v -r certs /etc/ssl &&
+install -v -d -m755 /usr/share/doc/openssl-0.9.8g &&
+cp -v -r doc/{HOWTO,README,*.{txt,html,gif}} \
+    /usr/share/doc/openssl-0.9.8g
+cd .. &&
+rm -fr openssl-0.9.8g
+
+
+########################################################
+#
+# Install Other Offical Package
+#
+########################################################
+
+tar xvf device-mapper.1.02.25.tgz &&
+cd device-mapper.1.02.25 &&
+./configure --prefix=/usr -sbindir=/sbin --libdir=/lib &&
+make &&
+make install &&
+cd .. &&
+rm -fr device-mapper.1.02.25
+
+tar xvf LVM2.2.02.36.tgz &&
+cd LVM2.2.02.36 &&
+./configure --prefix=/usr --sysconfdir=/etc \
+    --with-lvm1=none --enable-readline &&
+make &&
+make install &&
+cd .. &&
+rm -fr LVM2.2.02.36
+
+tar xvf reiserfsprogs-3.6.20.tar.gz &&
+cd reiserfsprogs-3.6.20 &&
+./configure --prefix=/usr --sbindir=/sbin &&
+make &&
+make install &&
+ln -sf reiserfsck /sbin/fsck.reiserfs &&
+ln -sf mkreiserfs /sbin/mkfs.reiserfs &&
+cd .. &&
+rm -fr reiserfsprogs-3.6.20
+
+tar xvf xfsprogs_2.9.7-1.tar.gz &&
+cd xfsprogs-2.9.7 &&
+make DEBUG=-DNDEBUG INSTALL_USER=root INSTALL_GROUP=root \
+    LOCAL_CONFIGURE_OPTIONS="--enable-readline=yes" &&
+make install &&
+make install-dev &&
+chmod -v 755 /lib/libhandle.so* &&
+rm -f /lib/libhandle.{a,la,so} &&
+ln -svf ../../lib/libhandle.so.1 /usr/lib/libhandle.so &&
+cd .. &&
+rm -fr xfsprogs-2.9.7
+
+tar xvf vsftpd-2.0.5.tar.gz &&
+cd vsftpd-2.0.5 &&
+echo "#define VSF_BUILD_TCPWRAPPERS" >>builddefs.h &&
+make &&
+install -v -m 755 vsftpd /usr/sbin/vsftpd &&
+install -v -m 644 vsftpd.8 /usr/share/man/man8 &&
+install -v -m 644 vsftpd.conf.5 /usr/share/man/man5 &&
+install -v -m 644 vsftpd.conf /etc &&
+cd .. &&
+rm -fr vsftpd-2.0.5
+install -v -d -m 0755 /var/ftp/empty &&
+groupadd -g 47 vsftpd &&
+useradd -d /dev/null -c "vsftpd User" -g vsftpd -s /bin/false \
+        -u 47 vsftpd &&
+groupadd -g 45 ftp &&
+useradd -c "FTP user" -d /var/ftp -g ftp -s /bin/false -u 45 ftp
+cd blfs-config-oscar &&
+make install-vsftp &&
+cd ..

@@ -1,0 +1,73 @@
+#################################
+#
+# MySQL-5.0.41
+# Procmail-3.22
+# Sendmail-8.14.1
+# bugzilla-3.2
+# Perl Modules
+#
+#################################
+
+groupadd -g 40 mysql &&
+useradd -c "MySQL Server" -d /dev/null -g mysql -s /bin/false \
+        -u 40 mysql
+
+tar xvf mysql-5.0.41.tar.gz &&
+cd mysql-5.0.41 &&
+C_EXTRA_FLAGS=-fno-strict-aliasing \
+./configure --prefix=/opt/mysql \
+            --sysconfdir=/etc \
+            --localstatedir=/srv/mysql \
+            --enable-thread-safe-client \
+            --enable-assembler \
+            --enable-local-infile \
+            --with-unix-socket-path=/var/run/mysql/mysql.sock \
+            --without-debug \
+            --without-bench \
+            --without-readline \
+            --with-berkeley-db \
+            --with-openssl \
+            --with-libwrap \
+            --with-extra-charsets=all &&
+make testdir=/tmp/mysql &&
+make testdir=/tmp/mysql install &&
+rm -rf /tmp/mysql &&
+cd .. &&
+rm -fr mysql-5.0.41
+
+install -v -m644 /opt/mysql/share/mysql/my-medium.cnf /etc/my.cnf &&
+cd /opt/mysql &&
+bin/mysql_install_db --user=mysql &&
+chgrp -v mysql /srv/mysql{,/test,/mysql} &&
+install -v -m755 -o mysql -g mysql -d /var/run/mysql &&
+bin/mysqld_safe --user=mysql 2>&1 >/dev/null &
+bin/mysqladmin -u root password mysql &&
+bin/mysqladmin -p shutdown
+
+cd /sources &&
+cd blfs-config-oscar &&
+make install-mysql &&
+cd ..
+
+tar xvf procmail-3.22.tar.gz &&
+cd procmail-3.22 &&
+make LOCKINGTEST=/tmp install &&
+make install-suid &&
+cd .. &&
+rm -fr procmail-3.22
+
+
+
+tar xvf bugzilla-3.2.tar.gz &&
+cd bugzilla-3.2 &&
+./checksetup.pl --check-modules &&
+perl -MCPAN -e 'install Bundle::Bugzilla' &&
+#perl install-module.pl GD &&
+#perl install-module.pl Chart::Base &&
+#perl install-module.pl Template::Plugin::GD::Image &&
+#perl install-module.pl GD::Text &&
+#perl install-module.pl GD::Graph &&
+#perl install-module.pl Image::Magick &&
+#perl install-module.pl Authen::SASL &&
+perl install-module.pl mod_perl2
+

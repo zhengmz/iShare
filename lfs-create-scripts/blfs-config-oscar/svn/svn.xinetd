@@ -1,0 +1,16 @@
+# Begin /etc/xinetd.d/svn
+
+service svn
+{
+        port                    = 3690
+        socket_type             = stream
+        protocol                = tcp
+        wait                    = no
+        user                    = svn
+        server                  = /opt/svn/bin/svnserve
+        server_args             = -i -r /opt/svn/repos
+	log_on_failure		+= USERID
+	disable			= no
+}
+
+# End /etc/xinetd.d/svn

@@ -1,0 +1,34 @@
+# the following variable defines the session which is started if the user
+# doesn't explicitely select a session
+DEFAULT_SESSION=xfce4
+
+case $1 in
+xfce4)
+	unset LC_ALL
+	exec startxfce4
+	;;
+icewm)
+	icewmbg &
+	icewmtray &
+	exec icewm
+	;;
+wmaker)
+	exec wmaker
+	;;
+fluxbox)
+	exec startfluxbox
+	;;
+metacity)
+	xterm &
+	exec metacity
+	;;
+twm)
+	xterm  -g 80x40+0+0   &
+	xclock -g 100x100-0+0 &
+	exec twm
+	;;
+*)
+	unset LC_ALL
+	exec startxfce4
+	;;
+esac

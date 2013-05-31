@@ -1,0 +1,12 @@
+几种文件系统之间的区别
+1、空间占用：ext3最大，xfs次之，reiser最省
+2、拷贝文件(大量文件，如root目录)：reiser最快，ext3次之，xfs最慢
+3、可回收空间：除了xfs不行外，ext3和reiser都可以
+4、初始化空间时，xfs最省空间，ext3次之，reiser最大
+所以，建议未来淘汰ext3，在虚拟机中用reiser，在正常机器中使用xfs
+xfs的好处，可参见网络中的介绍
+不过，xfs和JFS主要是针对大中型系统。
+
+虽然用SCSI硬盘，但在Grub时，仍可用(hd0,0)，而不是(sd0,0)
+
+用ip addr可以看出有多少的网络设备

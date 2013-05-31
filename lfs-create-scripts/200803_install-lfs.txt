@@ -1,0 +1,78 @@
+Create a LFS Linux According to LFS Books v6.3
+2008-2-27
+1. create vm
+   linux -> other linux 2.6.x
+   select IDE, because SCSI is not the default for liveCD.
+      memory: 512M
+      harddisk: 4.0G  (LSI Logic)
+   modify vm setting -> cd-rom use livecd.iso
+2. start vm with livecd
+   select timezone: Asia/Shanghai
+   select locale: Chinese (Simplified, UTF-8)
+   ignore to check the version of some common tools, such as bash, gcc.
+3. create system step by step throught Books.
+
+II. Preparing for the Build 
+Chapter 2. Preparing a New Partition 
+   2.2 Creating a New Partition
+   cfdisk /dev/hda
+   /dev/hda1     1.0G
+   /dev/hda2     3.0G
+   2.3 Creating a File System on the Partition
+   mke2fs -jv /dev/hda2    ## -j = mke2fs.ext3
+   mkswap /dev/hda1
+   2.4 Mounting the New Partiton
+   export LFS=/mnt/lfs
+   mkdir -pv $LFS
+   mount -v -t ext3 /dev/hda2 $LFS
+   /sbin/swapon -v /dev/hda1
+   
+   2008-5-28 using LVM and xfs to create a filesystem.
+   pvcreate /dev/hda
+   vgcreate vg0 /dev/hda
+   lvcreate -L2G -nsystem vg0
+   mkfs.xfs /dev/vg0/system
+   
+Chapter 3. Packages and Patches
+   3.1 Introduction
+   mkdir -v $LFS/sources
+   chmod -v a+wt $LFS/sources
+Chapter 4. Final Preparations 
+   4.2 Creating the $LFS/tools Directory
+   mkdir -v $LFS/tools
+   ln -sv $LFS/tools /
+   4.3. Adding the LFS User
+   groupadd lfs
+   useradd -s /bin/bash -g lfs -m -k /dev/null lfs
+   passwd lfs
+   chown -v lfs $LFS/tools
+   chown -v lfs $LFS/sources
+   su - lfs
+   4.4. Setting Up the Environment 
+   cat > ~/.bash_profile << "EOF"
+   exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash
+   EOF
+   cat > ~/.bashrc << "EOF"
+   set +h
+   umask 022
+   LFS=/mnt/lfs
+   LC_ALL=POSIX
+   PATH=/tools/bin:/bin:/usr/bin
+   export LFS LC_ALL PATH
+   EOF
+   source ~/.bash_profile
+Chapter 5. Constructing a Temporary System 
+   cd $LFS/sources
+   tar xvf /lfs-sources/binutils-2.17.tar.bz2
+   cd binutils-2.17
+   mkdir -v ../binuntils-build
+   cd ../binutils-build
+   time { $1 & $2 & $3; }
+   1:  CC="gcc -B/usr/bin/" ../binutils-2.17/configure \
+    --prefix=/tools --disable-nls --disable-werror
+   2: make
+   3: make install
+   make -C ld clean
+   make -C ld LIB_PATH=/tools/lib
+   cp -v ld/ld-new /tools/bin
+

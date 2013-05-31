@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# /etc/rc.d/init.d/slim: start/stop slim
+#
+
+. /etc/sysconfig/rc
+. $rc_functions
+case $1 in
+	start)
+		#/usr/bin/slim -d
+		loadproc /usr/bin/slim
+		;;
+	stop)
+	 	#killall /usr/bin/slim
+		killproc /usr/bin/slim
+		killproc /usr/X11R6/bin/X
+		;;
+	restart)
+		$0 stop
+		sleep 2
+		$0 start
+		;;
+	status)
+		statusproc /usr/bin/slim
+		;;
+
+	*)
+		echo "Usage: $0 {start|stop|restart|status}"
+		exit 1
+		;;
+esac
+
+# End of file

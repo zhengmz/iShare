@@ -1,0 +1,27 @@
+1. Installing the LVM2
+   See to "install-blfs.txt"
+2. Operating
+   pvcreate /dev/sdb1 (or whole disk: /dev/hdb)
+   vgcreate vg_app /dev/sdb1 /dev/hdb
+   lvcreate -L2G -nopt vg_app
+   mkreiserfs /dev/vg_app/opt
+   mount /dev/vg_app/opt /opt
+3. Automatic
+   1) Add the line in file /etc/fstab:
+      /dev/vg_app/opt  /opt    reiserfs  defaults    0   0
+   2) If add the line in file /etc/fstab:
+      /dev/vg_app/opt  /opt    reiserfs  defaults    1   2
+      The must Add the line in file /etc/rc.d/init.d/checkfs after "mount -n -o remount,ro": 
+      # Add for support LVM by zhengmz
+      boot_mesg "Setting up Logical Volume Management: "
+      /sbin/lvm vgchange -a y --ignorelockingfailure
+   3) Init scripts /etc/rc.d/init.d/mountfs:
+      Start: after mount rootfs, before mount otherfs. Add:
+      # Add for support LVM by zhengmz
+      boot_mesg "Setting up Logical Volume Management: "
+      /sbin/lvm vgchange -a y --ignorelockingfailure
+
+      Stop: after umount fs. Add:
+      # Add for support LVM by zhengmz
+      boot_mesg "Stopping Logical Volume Management: "
+      /sbin/lvm vgchange -a n --ignorelockingfailure

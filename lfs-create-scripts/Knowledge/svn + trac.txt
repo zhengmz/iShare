@@ -1,0 +1,63 @@
+安装说明：
+1. Berkeley DB
+2. Sqlite3
+3. Python
+4. Apache
+   其中，加--enable-mods-shared="dav dav_fs ssl deflate"，
+   1) 自动有了--enable-so
+   2) 必须有mod_dav
+   3) mod_ssl是为了支持https
+   可参考http://httpd.apache.org/docs/2.2/programs/configure.html
+5. neon
+   需有libxml2, expat
+6. swig
+   这其实是一个好东西，竟然一直都不知道
+7. subversion
+8. 配置subversion
+   1) 配置svnserve
+   		a. Setup Users, Groups, and Permissions
+      	 创建svn用户
+         修改umask为002，支持组内可修改
+      b. Create a Subversion repository.
+         创建一个repository，并进行赋权
+      c. Configure the Server
+         修改svnserve.conf
+      d. Starting the Server
+         启动svnserve，可通过xinetd或直接当作一个服务来运行
+   2) 配置httpd + mod_dav_svn
+      a. 环境确认
+         确认apache启动mod_dav，也支持动态加载模块即enable-so
+      b. 修改httpd.conf
+         增加LoadModule (安装subversion 会自动加上)
+         增加Repository路径，并启用dav svn
+      c. 进行认证设置
+         Basic和SSL
+      d. 进行授权
+         整体访问、每个目录访问、基于路径
+      e. 其他设置
+      	 版本库浏览：文件类型、定制外观、版本库列表
+      	 Apache日志：
+      f. 重启Apache
+
+9. Setuptools
+10.Genshi
+	 --without-speedups减少对PYTHON_EGG_CACHE的依赖，从而减少错误
+11.Trac
+12.配置Trac
+   1. 创建目录
+   2. 初始化项目trac-admin
+   3. 修改用户属性
+   4. 修改httpd.conf（默认使用CGI)
+ScriptAlias /trac /opt/apache/share/cgi-bin/trac.cgi
+# Trac needs to know where the database is located
+<Location /trac>
+ SetEnv TRAC_ENV /opt/trac/projects/tractest
+</Location>
+<Location "/trac/login">
+ AuthType Basic
+ AuthName "Trac"
+ AuthUserFile /etc/svnpwdfile
+ Require valid-user
+</Location>
+   5. 重启Apache
+   6. 通过mod_python来增强性能

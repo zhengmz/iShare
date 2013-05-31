@@ -1,0 +1,36 @@
+Some Basic Package...
+	gpm-1.20.1  -- mouse control
+	lynx2.8.6rel.5
+	wget-1.10.2
+	which-2.19
+	dhcpcd-3.0.19
+	tcp_wrappers_7.6
+	whois_4.7.26
+	net-tools-1.60
+	inetutils-1.5
+	xinetd-2.3.14
+	vsftpd-2.0.5
+
+Post LFS Configuration...
+	deb2targz
+	rpm2targz
+	BLFS-Books Part II
+		env
+		OpenSSL-0.9.8g
+			bc
+
+Other Offical Package...
+	device-mapper.1.02.25
+	LVM2.2.02.36
+	ReiserFS-3.6.20
+	XFS-2.9.7
+	
+Extenal App Package...
+  Tcl-8.4.15
+  Expect-5.43.0
+  DejaGNU-1.4.4
+  sqlite-3.5.9
+  Python-2.5.2
+  Apache-2.2.8
+  Subversion-1.4.4
+  

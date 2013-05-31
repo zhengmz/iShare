@@ -1,0 +1,16 @@
+Create a LFS Linux According to LFS Books v6.3
+
+1. create vm
+   linux -> other linux 2.6.x
+   select IDE, because SCSI is not the default for liveCD.
+      memory: 512M
+      harddisk: 4.0G  (Bus Logic)
+   modify vm setting -> cd-rom use livecd.iso
+   
+   After Vmware 6.0, support SCSI (Bus Logic)
+2. start vm with livecd
+   select timezone: Asia/Shanghai
+   select locale: Other/Default
+   ignore to check the version of some common tools, such as bash, gcc.
+3. create system step by step throught Books.
+

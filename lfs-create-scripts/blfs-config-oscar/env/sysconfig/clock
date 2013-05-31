@@ -1,0 +1,7 @@
+# Begin /etc/sysconfig/clock
+
+# 0: Using Local Time
+# 1: Using GMT
+UTC=0
+
+# End /etc/sysconfig/clock

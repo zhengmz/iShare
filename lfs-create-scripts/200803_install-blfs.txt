@@ -1,0 +1,24 @@
+Some Basic Package...
+	gpm  -- mouse control
+	lynx
+	wget
+	which
+
+Post LFS Configuration...
+	deb2targz
+	rpm2targz
+	BLFS-Books Part II
+
+Install Xorg...
+	pkg-config
+	libxml2
+	libxslt
+	ed
+	freetype
+	Fontconfig
+	libpng
+	libdrm
+	expat
+	MesaLib
+	XML-Parser-2.34
+	xorg

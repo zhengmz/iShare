@@ -1,0 +1,1051 @@
+########################################################
+#
+# Install Basic App.
+#
+########################################################
+tar xvf sqlite-3.5.9.tar.gz &&
+mkdir -v sqlite-build &&
+cd sqlite-build &&
+../sqlite-3.5.9/configure --prefix=/usr &&
+make &&
+make install &&
+install -c -m 0644 ../sqlite-3.5.9/sqlite3.1 /usr/share/man/man1 &&
+cd .. &&
+rm -rf sqlite-build &&
+rm -rf sqlite-3.5.9
+
+tar xvf Python-2.5.2.tar.bz2 &&
+cd Python-2.5.2 &&
+patch -Np1 -i ../Python-2.5.2-gdbm-1.patch &&
+./configure --prefix=/usr --enable-shared &&
+make &&
+# make test &&
+make install &&
+install -v -m755 -d /usr/share/doc/Python-2.5.2/html &&
+tar --strip-components=1 \
+    --no-same-owner \
+    --no-same-permissions \
+    -C /usr/share/doc/Python-2.5.2/html \
+    -xvf ../Python-html-2.5.tar.bz2 &&
+cd .. &&
+rm -fr Python-2.5.2
+
+cat >> /etc/profile << "EOF"
+
+# Support for python doc, by zhengmz
+export PYTHONDOCS=/usr/share/doc/Python-2.5.2/html
+EOF
+
+tar xvf doxygen-1.5.2.src.tar.gz &&
+cd doxygen-1.5.2 &&
+./configure --prefix /usr \
+            --docdir /usr/share/doc &&
+make &&
+make install &&
+# make install_docs &&
+cd .. &&
+rm -fr doxygen-1.5.2
+
+tar xvf pkg-config-0.22.tar.gz &&
+cd pkg-config-0.22 &&
+./configure --prefix=/usr &&
+make &&
+# make check &&
+make install &&
+cd .. &&
+rm -fr pkg-config-0.22
+
+groupadd -g 25 apache &&
+useradd -c "Apache Server" -d /dev/null -g apache \
+        -s /bin/false -u 25 apache
+
+tar xvf httpd-2.2.8.tar.bz2 &&
+cd httpd-2.2.8 &&
+patch -Np1 -i ../httpd-2.2.8-config-1.patch &&
+# Dir struct config File:
+#     config.layout
+#     srclib/apr/config.layout
+#     srclib/apr-util/config.layout
+# Update "opt" all limited to "/opt/apache"
+./configure --enable-layout=opt \
+            --enable-mods-shared="most ssl" \
+            --with-dbm=db45 --with-berkeley-db &&
+make &&
+make install &&
+chown -v root:root /opt/apache/lib/apache/httpd.exp \
+    /opt/apache/sbin/{apxs,apachectl,dbmmanage,envvars{,-std}} \
+    /opt/apache/man/man1/{dbmmanage,ht{dbm,digest,passwd}}.1 \
+    /opt/apache/man/man8/{ab,apachectl,apxs,htcacheclean,httpd}.8 \
+    /opt/apache/man/man8/{logresolve,rotatelogs,suexec}.8 &&
+chown -v -R apache:apache /opt/apache/share &&
+cd .. &&
+rm -fr httpd-2.2.8
+
+# For pkg-config
+cp /opt/apache/lib/pkgconfig/apr*.pc /usr/lib/pkgconfig
+
+# Config httpd.conf
+sed -i -e "s/User daemon/User apache/" \
+       -e "s/Group daemon/Group apache/" \
+    /opt/apache/conf/httpd.conf &&
+sed -i "s/^LoadModule isapi_module/# &/" \
+    /opt/apache/conf/httpd.conf
+    
+# Config sys
+# If needed, add path to /etc/ld.so.conf and /etc/man_db.conf
+# Or set env{LD_LIBRARY_PATH}
+
+cd blfs-config-oscar &&
+make install-apache &&
+cd ..
+
+tar xvf libxml2-2.6.31.tar.gz &&
+cd libxml2-2.6.31 &&
+./configure --prefix=/usr &&
+make &&
+# make test &&
+make install &&
+cd .. &&
+rm -fr libxml2-2.6.31
+
+tar xvf expat-2.0.1.tar.gz &&
+cd expat-2.0.1 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+install -v -m755 -d /usr/share/doc/expat-2.0.1 &&
+install -v -m644 doc/*.{html,png,css} /usr/share/doc/expat-2.0.1 &&
+# su zhengmz -c "make check" &&
+cd .. &&
+rm -fr expat-2.0.1
+
+########################################################
+#
+# Install Subversion and Trac
+#
+########################################################
+
+tar xvf neon-0.26.4.tar.gz &&
+cd neon-0.26.4 &&
+./configure --prefix=/opt/neon --enable-shared --with-ssl=openssl &&
+make &&
+make install &&
+cd .. &&
+rm -fr neon-0.26.4
+
+# For pkg-config
+cp /opt/neon/lib/pkgconfig/neon.pc /usr/lib/pkgconfig
+
+# Config sys
+# If needed, add path to /etc/ld.so.conf and /etc/man_db.conf
+# Or set env{LD_LIBRARY_PATH}
+
+tar xvf swig-1.3.29.tar.gz &&
+cd swig-1.3.29 &&
+./configure --prefix=/opt/swig &&
+make &&
+make install &&
+cd .. &&
+rm -fr swig-1.3.29
+
+tar xvf subversion-1.4.2.tar.gz &&
+cd subversion-1.4.2 &&
+sed -i 's/@SVN_APR_INCLUDES@/& @CPPFLAGS@/' \
+    subversion/bindings/swig/perl/native/Makefile.PL.in &&
+./configure --prefix=/opt/svn --disable-neon-version-check \
+            --with-apxs=/opt/apache/sbin/apxs \
+            --with-apr=/opt/apache \
+            --with-apr-util=/opt/apache \
+            --with-neon=/opt/neon \
+            --with-berkeley-db \
+            --with-ssl \
+            --with-swig=/opt/swig &&
+make &&
+doxygen doc/doxygen.conf &&
+make swig-pl &&
+make swig-py &&
+make check-swig-pl &&
+make check-swig-py &&
+make install &&
+install -v -m755 -d /opt/svn/share/doc &&
+cp -v -R doc/* /opt/svn/share/doc &&
+install -v -m755 -d /opt/svn/tools &&
+cp -v -R tools/* /opt/svn/tools &&
+make install-swig-pl &&
+make install-swig-py &&
+echo /opt/svn/lib/svn-python \
+    > /usr/lib/python2.5/site-packages/subversion.pth &&
+cd .. &&
+rm -fr subversion-1.4.2
+
+# # Config sys
+# If needed, add path to /etc/ld.so.conf and /etc/man_db.conf
+# Or set env{LD_LIBRARY_PATH} and env{PATH}
+
+# Setting up a Subversion Server for svnserve
+
+groupadd -g 56 svn &&
+useradd -c "SVN Owner" -d /home/svn -m -g svn -s /bin/false -u 56 svn &&
+groupadd -g 57 svntest &&
+usermod -G svntest -a svn
+
+mv /opt/svn/bin/svn /opt/svn/bin/svn.orig &&
+mv /opt/svn/bin/svnserve /opt/svn/bin/svnserve.orig &&
+cat >> /opt/svn/bin/svn << "EOF"
+#!/bin/sh
+umask 002
+/opt/svn/bin/svn.orig "$@"
+EOF
+cat >> /opt/svn/bin/svnserve << "EOF"
+#!/bin/sh
+umask 002
+/opt/svn/bin/svnserve.orig "$@"
+EOF
+chmod 0755 /opt/svn/bin/svn{,serve}
+
+mv /opt/apache/sbin/apachectl /opt/apache/sbin/apachectl.orig &&
+cat >> /opt/apache/sbin/apachectl << "EOF"
+#!/bin/sh
+umask 002
+/opt/apache/sbin/apachectl.orig "$@"
+EOF
+chmod 0755 /opt/apache/sbin/apachectl
+
+install -v -m 0755 -o svn -g svn -d /opt/svn/repos &&
+svnadmin create --fs-type fsfs /opt/svn/repos/svntest
+
+cd blfs-config-oscar &&
+make install-svn &&
+cd ..
+
+svn import -m "Initial import." \
+    /home/zhengmz/src \
+    file:///opt/svn/repos/svntest
+
+chown -R svn:svntest /opt/svn/repos/svntest &&
+chmod -R g+w /opt/svn/repos/svntest &&
+chmod g+s /opt/svn/repos/svntest/db &&
+usermod -G svn,svntest -a zhengmz &&
+su zhengmz -c "svnlook tree /opt/svn/repos/svntest/"
+
+cp /opt/svn/repos/svntest/conf/svnserve.conf \
+    /opt/svn/repos/svntest/conf/svnserve.conf.default &&
+cat > /opt/svn/repos/svntest/conf/svnserve.conf << "EOF"
+[general]
+anon-access = read
+auth-access = write
+EOF
+
+# Now you can use svn://localhost/svntest
+
+# Setting up a Subversion Server for SVN + Apache2
+
+usermod -G svntest -a apache
+cd blfs-config-oscar &&
+make install-mod_svn &&
+cd ..
+# add to /etc/opt/apache/httpd.conf
+# "LoadModule mod_dav_svn.so" will be added automatic after install svn
+# So only add following content to tail of httpd.conf
+# Include /opt/apache/conf/extra/mod_svn.conf
+Include conf/extra/mod_svn.conf
+
+# Beautify the result in Browser, such as ie, but not support lynx.
+cp /opt/svn/tools/xslt/svnindex.* /opt/apache/share/htdocs
+
+# Now you can use http://localhost/svn/svntest
+
+sh setuptools-0.6c8-py2.5.egg
+
+tar xvf Genshi-0.5.1.tar.gz &&
+cd Genshi-0.5.1 &&
+./setup.py --without-speedups install &&
+cd .. &&
+rm -fr Genshi-0.5.1
+# --without-speedups is for the fix "PYTHON_EGG_CACHE"
+
+tar xvf Trac-0.11.tar.gz &&
+cd Trac-0.11 &&
+./setup.py install &&
+install -v -m 644 -g apache -o apache cgi-bin/* /opt/apache/share/cgi-bin &&
+cd .. &&
+rm -fr Trac-0.11
+
+# Setting up trac
+mkdir -pv /opt/trac/projects &&
+trac-admin /opt/trac/projects/tractest initenv
+chown -R apache.apache /opt/trac/projects
+
+# Modify httpd.conf
+# ScriptAlias /trac /opt/apache/share/cgi-bin/trac.cgi
+
+# <Location /trac>
+#     SetEnv TRAC_ENV /opt/trac/projects/tractest
+# </Location>
+
+tar xvf mod_python-3.3.1.tgz &&
+cd mod_python-3.3.1 &&
+./configure --with-apxs=/opt/apache/sbin/apxs &&
+make &&
+make install &&
+cd .. &&
+rm -fr mod_python-3.3.1
+
+cd blfs-config-oscar &&
+make install-mod_python &&
+cd ..
+
+# Modify httpd.conf
+LoadModule python_module libexec/mod_python.so
+Include conf/extra/mod_python.conf
+
+########################################################
+#
+# Install Xorg and X-app
+#
+########################################################
+
+tar xvf libpthread-stubs-0.1.tar.bz2 &&
+cd libpthread-stubs-0.1 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd .. &&
+rm -fr libpthread-stubs-0.1
+
+tar xvf libxslt-1.1.22.tar.gz &&
+cd libxslt-1.1.22 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd .. &&
+rm -fr libxslt-1.1.22
+
+tar xvf ed-0.8.tar.bz2 &&
+cd ed-0.8 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+make install-man &&
+cd .. &&
+rm -fr ed-0.8
+
+tar xvf freetype-2.3.7.tar.bz2 &&
+cd freetype-2.3.7 &&
+tar xf ../freetype-doc-2.3.7.tar.bz2 \
+    --strip-components=2 -C docs &&
+sed -i -r -e 's:.*(#.*BYTE.*) .*:\1:' \
+          -e 's:.*(#.*SUBPIX.*) .*:\1:' \
+          include/freetype/config/ftoption.h &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+install -v -m755 -d /usr/share/doc/freetype-2.3.7 &&
+cp -v -R docs/* /usr/share/doc/freetype-2.3.7 &&
+cd .. &&
+rm -fr freetype-2.3.7
+
+tar xvf fontconfig-2.4.2.tar.gz &&
+cd fontconfig-2.4.2 &&
+./configure --prefix=/usr \
+    --sysconfdir=/etc --localstatedir=/var \
+    --disable-docs --without-add-fonts \
+    --with-docdir=/usr/share/doc/fontconfig-2.4.2 &&
+make &&
+make install &&
+install -v -m644 doc/*.3 /usr/share/man/man3 &&
+install -v -m644 doc/*.5 /usr/share/man/man5 &&
+install -v -m755 \
+        -d /usr/share/doc/fontconfig-2.4.2/fontconfig-devel &&
+install -v -m644 doc/*.{html,pdf,txt} \
+        /usr/share/doc/fontconfig-2.4.2 &&
+install -v -m644 doc/fontconfig-devel/* \
+        /usr/share/doc/fontconfig-2.4.2/fontconfig-devel &&
+cd .. &&
+rm -fr fontconfig-2.4.2
+
+tar xvf libpng-1.2.29.tar.bz2 &&
+cd libpng-1.2.29 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+install -v -m755 -d /usr/share/doc/libpng-1.2.29 &&
+install -v -m644 README libpng-1.2.29.txt \
+    /usr/share/doc/libpng-1.2.29 &&
+cd .. &&
+rm -fr libpng-1.2.29
+
+tar xvf libdrm-2.3.0.tar.gz &&
+cd libdrm-2.3.0 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd .. &&
+rm -fr libdrm-2.3.0
+
+tar xvf XML-Parser-2.34.tar.gz &&
+cd XML-Parser-2.34 &&
+perl Makefile.PL &&
+make &&
+make install &&
+cd .. &&
+rm -fr XML-Parser-2.34
+
+cd xc &&
+script/build.sh proto &&
+script/build.sh util &&
+tar xvf libXau-1.0.3.tar.bz2 &&
+cd libXau-1.0.3 &&
+./configure --prefix=/usr \
+            --sysconfdir=/etc \
+            --mandir=/usr/share/man \
+            --localstatedir=/var &&
+make &&
+make install &&
+cd .. &&
+rm -fr libXau-1.0.3
+
+tar xvf libXdmcp-1.0.2.tar.bz2 &&
+cd libXdmcp-1.0.2 &&
+./configure --prefix=/usr \
+            --sysconfdir=/etc \
+            --mandir=/usr/share/man \
+            --localstatedir=/var &&
+make &&
+make install &&
+cd .. &&
+rm -fr libXdmcp-1.0.2
+
+tar xvf xcb-proto-1.0.tar.bz2 &&
+cd xcb-proto-1.0 &&
+./configure --prefix=/usr \
+            --sysconfdir=/etc \
+            --mandir=/usr/share/man \
+            --localstatedir=/var &&
+make &&
+make install &&
+install -dv -m755 /usr/share/doc/xcb-proto-1.0 &&
+install -v -m644 doc/* /usr/share/doc/xcb-proto-1.0 &&
+cd .. &&
+rm -fr xcb-proto-1.0
+
+tar xvf libxcb-1.0.tar.bz2 &&
+cd libxcb-1.0 &&
+patch -Np1 -i ../libxcb-1.0-sloppy_lock-1.patch &&
+./configure --prefix=/usr \
+            --sysconfdir=/etc \
+            --mandir=/usr/share/man \
+            --localstatedir=/var \
+            --docdir=/usr/share/doc/libxcb-1.0 &&
+make &&
+make install &&
+cd .. &&
+rm -fr libxcb-1.0
+
+script/build_lib.sh lib &&
+tar xvf xbitmaps-1.0.1.tar.bz2 &&
+cd xbitmaps-1.0.1 &&
+./configure --prefix=/usr \
+            --sysconfdir=/etc \
+            --mandir=/usr/share/man \
+            --localstatedir=/var &&
+make &&
+make install &&
+cd .. &&
+rm -fr xbitmaps-1.0.1
+
+tar xvf MesaLib-6.5.2.tar.bz2 &&
+tar xvf MesaDemos-6.5.2.tar.bz2 &&
+tar xvf MesaGLUT-6.5.2.tar.bz2 &&
+cd Mesa-6.5.2 &&
+make linux-dri-x86 OPT_FLAGS="-O2 -fno-strict-aliasing" \
+    DRI_DRIVER_INSTALL_DIR=/usr/lib/X11/modules/dri \
+    X11_INCLUDES=-I/usr/include \
+    EXTRA_LIB_PATH=-L/usr/lib &&
+make -C progs/xdemos PROGS='glxinfo glxgears' &&
+make install INSTALL_DIR=/usr \
+    DRI_DRIVER_INSTALL_DIR=/usr/lib/X11/modules/dri &&
+install -dv /usr/share/doc/MesaLib-6.5.2 &&
+install -v -m644 docs/* /usr/share/doc/MesaLib-6.5.2 &&
+install -v -m755 progs/xdemos/glx{info,gears} /usr/bin &&
+cd ..
+# Do not remove the Mesa source tree yet, it will be required to build the Xorg-Server-1.2.0.
+# rm -fr Mesa-6.5.2
+
+script/build.sh app &&
+tar xvf xcursor-themes-1.0.1.tar.bz2 &&
+cd xcursor-themes-1.0.1 &&
+./configure --prefix=/usr \
+            --sysconfdir=/etc \
+            --mandir=/usr/share/man \
+            --localstatedir=/var &&
+make &&
+make install &&
+cd .. &&
+rm -fr xcursor-themes-1.0.1
+
+script/build.sh font &&
+install -v -d -m755 /usr/share/fonts &&
+ln -svn /usr/lib/X11/fonts/OTF /usr/share/fonts/X11-OTF &&
+ln -svn /usr/lib/X11/fonts/TTF /usr/share/fonts/X11-TTF
+
+tar xvf xkeyboard-config-1.2.tar.bz2 &&
+cd xkeyboard-config-1.2 &&
+./configure --prefix=/usr \
+            --sysconfdir=/etc \
+            --mandir=/usr/share/man \
+            --localstatedir=/var \
+             --with-xkb-rules-symlink=xorg &&
+make &&
+make install &&
+install -dv -m755 /usr/share/doc/xkeyboard-config-1.2 &&
+install -v -m644 docs/{README,HOWTO}* \
+    /usr/share/doc/xkeyboard-config-1.2 &&
+cd .. &&
+rm -fr xkeyboard-config-1.2
+
+tar xvf luit-1.0.2.tar.bz2 &&
+cd luit-1.0.2 &&
+./configure --prefix=/usr \
+            --sysconfdir=/etc \
+            --mandir=/usr/share/man \
+            --localstatedir=/var \
+            --with-localealiasfile=/usr/share/X11/locale/locale.alias &&
+make &&
+make install &&
+cd .. &&
+rm -fr luit-1.0.2
+
+tar xvf xorg-server-1.2.0.tar.bz2 &&
+cd xorg-server-1.2.0 &&
+./configure --prefix=/usr \
+            --sysconfdir=/etc \
+            --mandir=/usr/share/man \
+            --localstatedir=/var \
+            --with-mesa-source=/sources/Mesa-6.5.2 \
+            --with-module-dir=/usr/lib/X11/modules \
+            --with-dri-driver-path=/usr/lib/X11/modules/dri \
+            --with-xkb-output=/var/lib/xkb \
+            --enable-install-setuid &&
+make &&
+make install &&
+cd .. &&
+rm -fr xorg-server-1.2.0
+
+script/build_drv.sh driver &&
+ln -vsf /usr /usr/X11R6
+
+tar xvf xterm-231.tgz &&
+cd xterm-231 &&
+sed -i '/v0/,+1s/new:/new:kb=^?:/' termcap &&
+echo -e '\tkbs=\\177,' >>terminfo &&
+TERMINFO=/usr/lib/terminfo ./configure --prefix=/usr \
+            --sysconfdir=/etc \
+            --mandir=/usr/share/man \
+            --localstatedir=/var \
+            --enable-luit --enable-wide-chars \
+            --with-app-defaults=/usr/share/X11/app-defaults &&
+make &&
+make install &&
+make install-ti &&
+cd .. &&
+rm -fr xterm-231
+
+# Configuring xterm
+cat >> /usr/share/X11/app-defaults/XTerm << "EOF"
+*VT100*locale: true
+*VT100*faceName: Monospace
+*VT100*faceSize: 10
+*backarrowKeyIsErase: true
+*ptyInitialErase: true
+EOF
+
+# Configuring The X Window System
+cd ~ &&
+Xorg -configure 
+
+# Testing the config file
+X -config ~/xorg.conf.new
+
+cat >> /etc/sysconfig/createfiles << "EOF"
+/tmp/.ICE-unix dir 1777 root root
+EOF
+# IBM PC not support DRI
+# usermod -a -G video zhengmz
+
+# Modify /etc/inittab
+cat >> /etc/inittab << "EOF"
+# Run xdm as a separate service
+x:5:respawn:/usr/X11R6/bin/xdm -nodaemon
+EOF
+
+# If Linux-PAM is installed on your system, then
+cp -v /etc/pam.d/login /etc/pam.d/xdm
+
+# Modify the config file, or using the following cmd.
+cd /sources/blfs-config-oscar
+make install-xorg
+
+# Install Chinese fonts
+tar xvf fireflysung-1.3.0.tar.gz &&
+cd fireflysung-1.3.0 &&
+install -v -d -m755 /usr/share/fonts/fireflysung &&
+install -v -m644 *.ttf /usr/share/fonts/fireflysung &&
+cd .. &&
+rm -fr fireflysung-1.3.0
+
+########################################################
+#
+# Install Xfce
+#
+########################################################
+
+tar xvf sudo-1.6.9p15.tar.gz &&
+cd sudo-1.6.9p15 &&
+./configure --prefix=/usr --libexecdir=/usr/lib \
+    --with-ignore-dot --with-all-insults \
+    --enable-shell-sets-home --disable-root-sudo \
+    --with-logfac=auth --without-sendmail &&
+make &&
+make install &&
+cd .. &&
+rm -rf sudo-1.6.9p15
+
+# Must configure the /etc/sudoers with cmd 'visudo'
+# And, create the PAM configure with following cmd:
+sed -e 's@/su@/sudo@' -e '/pam_rootok/d' \
+    /etc/pam.d/su > /etc/pam.d/sudo
+
+tar xvf glib-2.12.12.tar.bz2 &&
+cd glib-2.12.12 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd .. &&
+rm -rf glib-2.12.12
+
+cat > /etc/profile.d/glib2-locale.sh << "EOF"
+# Use the current locale charset for filenames
+# in applications using GLib
+export G_FILENAME_ENCODING=@locale
+EOF
+
+tar xvf cairo-1.4.14.tar.gz &&
+cd cairo-1.4.14 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd .. &&
+rm -rf cairo-1.4.14
+
+tar xvf pango-1.16.4.tar.bz2 &&
+cd pango-1.16.4 &&
+./configure --prefix=/usr --sysconfdir=/etc &&
+make &&
+make install &&
+cd .. &&
+rm -rf pango-1.16.4
+
+tar xvf atk-1.18.0.tar.bz2 &&
+cd atk-1.18.0 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd .. &&
+rm -rf atk-1.18.0
+
+tar xvf jpegsrc.v6b.tar.gz &&
+cd jpeg-6b &&
+./configure --prefix=/usr --enable-static --enable-shared &&
+make &&
+make install &&
+cd .. &&
+rm -rf jpeg-6b
+
+tar xvf tiff-3.8.2.tar.gz &&
+cd tiff-3.8.2 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd .. &&
+rm -rf tiff-3.8.2
+
+tar xvf gtk+-2.10.13.tar.bz2 &&
+cd gtk+-2.10.13 &&
+./configure --prefix=/usr --sysconfdir=/etc &&
+make &&
+make install &&
+install -v -m755 -d /usr/share/doc/gtk+-2.10.13/{faq,tutorial} &&
+cp -v -R docs/faq/html/* /usr/share/doc/gtk+-2.10.13/faq &&
+cp -v -R docs/tutorial/html/* /usr/share/doc/gtk+-2.10.13/tutorial &&
+install -v -m644 docs/*.txt /usr/share/doc/gtk+-2.10.13 &&
+cd .. &&
+rm -rf gtk+-2.10.13
+
+tar xvf libcroco-0.6.1.tar.bz2 &&
+cd libcroco-0.6.1 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+install -v -m755 -d /usr/share/doc/libcroco-0.6.1/examples &&
+install -v -m644 README docs/usage.txt \
+    /usr/share/doc/libcroco-0.6.1 &&
+install -v -m644 docs/examples/*.c \
+    /usr/share/doc/libcroco-0.6.1/examples &&
+cd .. &&
+rm -rf libcroco-0.6.1
+
+tar xvf libgsf-1.14.7.tar.bz2 &&
+cd libgsf-1.14.7 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd .. &&
+rm -rf libgsf-1.14.7
+
+tar xvf librsvg-2.16.1.tar.bz2 &&
+cd librsvg-2.16.1 &&
+./configure --prefix=/usr \
+            --sysconfdir=/etc \
+            --disable-mozilla-plugin &&
+make &&
+make install &&
+cd .. &&
+rm -rf librsvg-2.16.1
+
+tar xvf libglade-2.6.1.tar.bz2 &&
+cd libglade-2.6.1 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd .. &&
+rm -rf libglade-2.6.1
+
+tar xvf xscreensaver-5.03.tar.gz &&
+cd xscreensaver-5.03 &&
+./configure --prefix=/usr --libexecdir=/usr/lib &&
+make &&
+make install &&
+cd .. &&
+rm -rf xscreensaver-5.03
+
+tar xvf hicolor-icon-theme-0.10.tar.gz &&
+cd hicolor-icon-theme-0.10 &&
+./configure --prefix=/usr &&
+make install &&
+cd .. &&
+rm -rf hicolor-icon-theme-0.10
+
+tar xvf startup-notification-0.9.tar.bz2 &&
+cd startup-notification-0.9 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+install -v -m644 -D doc/startup-notification.txt \
+    /usr/share/doc/startup-notification-0.9/startup-notification.txt &&
+cd .. &&
+rm -rf startup-notification-0.9
+
+tar xvf libgtkhtml-2.11.1.tar.bz2 &&
+cd libgtkhtml-2.11.1 &&
+./configure --prefix=/usr --disable-accessibility &&
+make &&
+make install &&
+cd .. &&
+rm -rf libgtkhtml-2.11.1
+
+tar xvf URI-1.37.tar.gz &&
+cd URI-1.37 &&
+perl Makefile.PL &&
+make &&
+make test &&
+make install &&
+cd .. &&
+rm -fr URI-1.37
+
+tar xvf vte-0.16.6.tar.bz2 &&
+cd vte-0.16.6 &&
+sed -i 's%\\177:%&kh=\\EOH:@7=\\EOF:%' termcaps/xterm &&
+./configure --prefix=/usr --libexecdir=/usr/lib/vte &&
+make &&
+make install &&
+cd .. &&
+rm -rf vte-0.16.6
+
+tar xvf shared-mime-info-0.21.tar.bz2 &&
+cd shared-mime-info-0.21 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd .. &&
+rm -rf shared-mime-info-0.21
+
+cat >>/etc/profile << "EOF"
+XDG_DATA_DIRS=/usr/share
+export XDG_DATA_DIRS
+EOF
+
+cd xfce-4.4.2 &&
+script/build.sh
+
+# Config the xinitrc
+cat > ~/.xinitrc << "EOF"
+unset LC_ALL
+startxfce4
+EOF
+
+########################################################
+#
+# Install More Application.
+#
+########################################################
+tar xvf slim-1.3.0.tar.gz &&
+cd slim-1.3.0 &&
+make USE_PAM=1 &&
+make install &&
+cd .. &&
+rm -fr slim-1.3.0
+
+tar xvf slim-themes.tar.gz &&
+cd slim-themes &&
+make all &&
+cd .. &&
+rm -fr slim-themes
+
+# Config the slim
+# 1. In '/etc/inittab', replace 'xdm':
+x:5:respawn:/usr/bin/slim >& /dev/null
+
+# 2. modify slim.conf and xinitrc:
+cd blfs-config-oscar &&
+make install-slim &&
+cd ..
+
+# 3. config pam.d
+sed 's@/xdm@/slim@' /etc/pam.d/xdm > /etc/pam.d/slim
+
+tar xvf libIDL-0.8.8.tar.bz2 &&
+cd libIDL-0.8.8 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd .. &&
+rm -fr libIDL-0.8.8
+
+tar xvf zip232.tar.gz &&
+cd zip-2.32 &&
+make -f unix/Makefile generic_gcc &&
+make prefix=/usr -f unix/Makefile install &&
+cd .. &&
+rm -fr zip-2.32
+
+tar xvf unzip552.tar.gz &&
+cd unzip-5.52 &&
+patch -Np1 -i ../unzip-5.52-security_fix-1.patch &&
+patch -Np1 -i ../unzip-5.52-security_fix-2.patch &&
+patch -Np1 -i ../unzip-5.50-alt-iconv-v1.1.patch &&
+make -f unix/Makefile LOCAL_UNZIP=-D_FILE_OFFSET_BITS=64 linux &&
+make prefix=/usr install &&
+cd .. &&
+rm -fr unzip-5.52
+
+tar xvf nss-3.11.7-with-nspr-4.6.7.tar.gz &&
+cd nss-3.11.7 &&
+bash
+export WORKINGDIR=$PWD &&
+export BUILD_OPT=1 &&
+patch -Np1 -i ../nss-3.11.7-with-nspr-4.6.7-fedora_fixes-1.patch &&
+cd mozilla/security/nss &&
+make nss_build_all &&
+cd ../.. &&
+export NSS_LINUXDIR=$(basename `ls -d $WORKINGDIR/mozilla/dist/Linux*`) &&
+install -v -m755 nsprpub/$NSS_LINUXDIR/config/nspr-config \
+                 security/nss/cmd/config/nss-config \
+    /usr/bin &&
+install -v -m755 -d /usr/lib/pkgconfig &&
+install -v -m644 nsprpub/lib/pkgconfig/nspr.pc \
+                 security/nss/lib/pkgconfig/nss.pc \
+    /usr/lib/pkgconfig &&
+cd dist &&
+install -v -m755 $NSS_LINUXDIR/lib/*.so /usr/lib &&
+install -v -m644 $NSS_LINUXDIR/lib/{*.chk,libcrmf.a} /usr/lib &&
+install -v -m755 -d /usr/include/{nss,nspr} &&
+install -v -m644 {public,private}/nss/* /usr/include/nss &&
+cp -v -RL $NSS_LINUXDIR/include/* /usr/include/nspr &&
+chmod -v 644 /usr/include/nspr/prvrsion.h &&
+exit
+cd .. && 
+rm -fr nss-3.11.7
+
+tar xvf pth-2.0.7.tar.gz &&
+cd pth-2.0.7 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+install -v -m755 -d /usr/share/doc/pth-2.0.7 &&
+install -v -m644    README PORTING SUPPORT TESTS \
+                    /usr/share/doc/pth-2.0.7 &&
+cd .. &&
+rm -fr pth-2.0.7
+
+tar xvf libassuan-1.0.4.tar.bz2 &&
+cd libassuan-1.0.4 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+install -v -m644 -D README /usr/share/doc/libassuan-1.0.4/README &&
+cd .. &&
+rm -fr libassuan-1.0.4
+
+tar xvf libgpg-error-1.5.tar.bz2 &&
+cd libgpg-error-1.5 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+install -v -m644 -D README /usr/share/doc/libgpg-error-1.5/README &&
+cd .. &&
+rm -fr libgpg-error-1.5
+
+tar xvf libgcrypt-1.2.4.tar.bz2 &&
+cd libgcrypt-1.2.4 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+install -v -m644 -D README /usr/share/doc/libgcrypt-1.2.4/README &&
+cd .. &&
+rm -fr libgcrypt-1.2.4
+
+tar xvf libksba-1.0.2.tar.bz2 &&
+cd libksba-1.0.2 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+install -v -m644 -D README /usr/share/doc/libksba-1.0.2/README &&
+cd .. &&
+rm -fr libksba-1.0.2
+
+tar xvf pinentry-0.7.3.tar.gz &&
+cd pinentry-0.7.3 &&
+./configure --prefix=/usr \
+            --enable-pin-entry-curses        \
+            --enable-fallback-curses         \
+            --disable-pinentry-gtk           \
+            --disable-pinentry-qt            &&
+make &&
+make install &&
+install -v -m644 -D README /usr/share/doc/pinentry-0.7.3/README &&
+cd .. &&
+rm -fr pinentry-0.7.3
+
+tar xvf gnupg-2.0.8.tar.bz2 &&
+cd gnupg-2.0.8 &&
+./configure --prefix=/usr --libexecdir=/usr/lib/gnupg2 &&
+make &&
+make install &&
+install -v -m755 -d         /usr/share/doc/gnupg-2.0.8 &&
+ln -sv ../../gnupg/FAQ      /usr/share/doc/gnupg-2.0.8 &&
+ln -sv ../../gnupg/faq.html /usr/share/doc/gnupg-2.0.8 &&
+install -v -m644 doc/{DETAILS,KEYSERVER,OpenPGP,TRANSLATE} \
+                            /usr/share/doc/gnupg-2.0.8 &&
+cd .. &&
+rm -fr gnupg-2.0.8
+
+tar xvf seamonkey-1.1.9.source.tar.bz2 &&
+cd mozilla &&
+cp ../seamonkey-1.1.9-mozconfig .mozconfig &&
+cat >> layout/build/Makefile.in << "EOF"
+ifdef MOZ_ENABLE_CANVAS
+EXTRA_DSO_LDOPTS += $(XLDFLAGS) -lX11 -lXrender
+endif
+EOF
+make -f client.mk build &&
+tar -xf ../enigmail-0.95.6.tar.gz -C mailnews/extensions &&
+( cd mailnews/extensions/enigmail && ./makemake -r ) &&
+make -C ../seamonkey-build/mailnews/extensions/enigmail &&
+make -C ../seamonkey-build/mailnews/extensions/enigmail \
+        XPIFILE=enigmail-0.95.6.xpi xpi &&
+make -f client.mk install &&
+install -v -m644 ../seamonkey-build/dist/public/ldap-private/* \
+    /usr/include/seamonkey-1.1.9/ldap &&
+install -v -m644 ../seamonkey-build/dist/bin/isp/movemail.rdf \
+    /usr/lib/seamonkey-1.1.9/isp &&
+ln -v -sf nss.pc /usr/lib/pkgconfig/seamonkey-nss.pc &&
+ln -v -sf nspr.pc /usr/lib/pkgconfig/seamonkey-nspr.pc &&
+install -v -m644 -D ../seamonkey-build/dist/bin/enigmail-0.95.6.xpi \
+    /usr/lib/seamonkey-1.1.9/xpi_store/enigmail-0.95.6.xpi &&
+make -C ../seamonkey-build/mailnews/extensions/enigmail install &&
+cd .. &&
+rm -fr mozilla
+
+ln -v -sf seamonkey /usr/bin/netscape
+
+
+groupadd -g 51 stunnel &&
+useradd -c "Stunnel Daemon" -d /var/lib/stunnel \
+        -g stunnel -s /bin/false -u 51 stunnel
+
+tar xvf stunnel-4.21.tar.gz &&
+cd stunnel-4.21 &&
+patch -Np1 -i ../stunnel-4.21-setuid-1.patch &&
+sed -i 's|nogroup|stunnel|g' configure &&
+sed -i 's|$(prefix)/var/lib|$(localstatedir)|' tools/Makefile.in &&
+
+./configure --prefix=/usr \
+            --sysconfdir=/etc \
+            --localstatedir=/var/lib &&
+make &&
+make docdir=/usr/share/doc/stunnel-4.21 install &&
+cd .. &&
+rm -fr stunnel-4.21
+
+
+tar xvf samba-3.0.30.tar.gz &&
+cd samba-3.0.30 &&
+cd source &&
+./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --with-piddir=/var/run \
+    --with-pammodulesdir=/lib/security \
+    --with-fhs \
+    --with-smbmount &&
+make &&
+make install &&
+mv -v /usr/lib/samba/libsmbclient.so /usr/lib &&
+ln -v -sf ../libsmbclient.so /usr/lib/samba &&
+ln -v -sf libsmbclient.so /usr/lib/libsmbclient.so.0 &&
+chmod -v 644 /usr/include/lib{smbclient,msrpc}.h &&
+install -v -m755 nsswitch/libnss_win{s,bind}.so /lib &&
+ln -v -sf libnss_winbind.so /lib/libnss_winbind.so.2 &&
+ln -v -sf libnss_wins.so /lib/libnss_wins.so.2 &&
+install -v -m644 ../examples/smb.conf.default /etc/samba &&
+install -v -m755 -d /usr/share/doc/samba-3.0.30 &&
+install -v -m644 ../docs/*.pdf /usr/share/doc/samba-3.0.30 &&
+ln -v -s ../../samba/swat  /usr/share/doc/samba-3.0.30 &&
+cd ../.. &&
+rm -fr samba-3.0.30
+
+chmod -v 4755 /usr/bin/smb{mnt,umount} \
+              /usr/sbin/{,u}mount.cifs
+
+
+########################################################
+#
+# Install VMware.
+#
+########################################################
+
+# Modify the linux kernel:
+#    Device Drivers->
+#      Parallel port support->
+#        [M] Parallel port support->
+#          [M] PC-style hardware
+ONFIG_RTC=y 
+CONFIG_PARPORT=m
+CONFIG_PARPORT_PC=m
+
+
+tar xvf VMware-server-1.0.4-56528.tar.gz &&
+cd vmware-server-distrib &&
+./vmware-installer.pl

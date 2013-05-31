@@ -1,0 +1,12 @@
+# Begin /etc/sysconfig/mouse
+
+# For serial mouse (such as COM1)
+# MDEVICE="/dev/ttys0"
+# For USB mice
+# MDEVICE="/dev/input/misc"
+# For PS2 mice
+MDEVICE="/dev/psaux"
+PROTOCOL="imps2"
+GPMOPTS=""
+
+# End /etc/sysconfig/mouse
