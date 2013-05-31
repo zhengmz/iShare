@@ -27,6 +27,7 @@
       Step1: chcon -R -t httpd_git_rw_content_t /opt/git
       Step2: semanage fcontext -a -t httpd_git_rw_content_t "/opt/git(/.*)?"
       if will be connected to trac, must be "httpd_sys_rw_content_t"
+      if using gitweb, must change gitweb.cgi to "httpd_sys_script_exec_t"
 
 4. access method
    method: git clone http://user@ip/git/gittest.git gittest
