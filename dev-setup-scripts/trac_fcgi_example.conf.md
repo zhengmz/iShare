@@ -44,11 +44,11 @@
         FcgidIPCDir /tmp/fcgid_sock/
         FcgidProcessTableFile /tmp/fcgid_shm
     </IfModule>
-    
+     
     ScriptAlias /trac /var/www/fcgi-bin/trac.fcgi/
-    
+     
     FcgidInitialEnv TRAC_ENV_PARENT_DIR /opt/trac
-    
+     
     <LocationMatch "/trac/[^/]+/login">
        AuthType Basic
        AuthName "ARCH web Auth"
@@ -60,18 +60,18 @@
   注:内容如下（第二行的空行是必须的）
 
     #!/usr/bin/env python
-    
+     
     # ---- TRAC.FCGI ----
     # Note: This will work on >=0.9
-    
+     
     import os
-    
+     
     from trac.web.main import dispatch_request
     try:
         from flup.server.fcgi import WSGIServer
     except ImportError:
         from trac.web._fcgi import WSGIServer
-    
+     
     if __name__ == '__main__':
         if 'TRAC_ENV' not in os.environ and \
            'TRAC_ENV_PARENT_DIR' not in os.environ:
