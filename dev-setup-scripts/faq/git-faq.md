@@ -56,6 +56,7 @@
     git config --global color.diff auto                 # git diff的时候要显示颜色
     git config --global color.status auto               # git status的时候要显示颜色
     git config --global color.branch auto               # git branch的时候要显示颜色
+    git config --global color.ui true                   # 把颜色的选项全部打开
 
 ### 3)命令别名设置
 
