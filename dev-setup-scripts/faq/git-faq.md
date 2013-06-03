@@ -1,6 +1,12 @@
 记录git相关的问题
 =====
 
+0. 一些有用的链接
+-----
+  * [A tutorial introduction to git](https://www.kernel.org/pub/software/scm/git/docs/v1.4.4.4/tutorial.html)
+  * [Git User’s Manual](https://www.kernel.org/pub/software/scm/git/docs/user-manual.html)
+  * [使用 Git 管理源代码](http://www.ibm.com/developerworks/cn/linux/l-git/)
+
 1. svn迁移到git乱码问题解决
 -----
 来源：http://guoyunsky.iteye.com/blog/1845303
