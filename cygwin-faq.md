@@ -15,8 +15,6 @@ Cygwin 使用大全
 
   1. 首先得通过setup工具装好apache，并确保运行正确
 
-     如要先安装libapr-develop
-
   2. 先运行cygserver，使用以下命令使其成为windows下的一个服务，然后确保其运行正常
 
 
@@ -26,4 +24,4 @@ Cygwin 使用大全
 
      有两种方式：
      - /usr/sbin/apachectl2 start
-     - /usr/sbin/httpd2-config 将httpd变成windows下的一个服务，然后再运行
+     - /usr/sbin/httpd2-config 将httpd变成windows下的一个服务，然后再运行 (需要先安装libapr-develop)
