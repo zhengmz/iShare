@@ -90,3 +90,12 @@
   之后再source ~/.bashrc之后,你再进入到一个git目录就能看到所在分支了,类似如下:
 
     /tmp/demo (git::master)$
+
+3. 其他问题
+-----
+
+### 1)git pull或push时总出现错误：(gnome-ssh-askpass:2878): Gtk-WARNING **: cannot open display:
+
+    echo 'unset SSH_ASKPASS' >> ~/.bashrc && source ~/.bashrc
+
+
