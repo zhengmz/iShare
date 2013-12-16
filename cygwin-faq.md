@@ -39,4 +39,4 @@ Cygwin 使用大全
 
 ### 2.2 cygwin配置
 
-请参阅文章：《惊艳的cygwin——Windows下的Linux命令行环境的配置和使用》
+请参阅文章：[《惊艳的cygwin——Windows下的Linux命令行环境的配置和使用》](http://oldratlee.com/post/2012-12-22/stunning-cygwin)
