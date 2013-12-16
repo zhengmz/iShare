@@ -40,3 +40,7 @@ Cygwin 使用大全
 ### 2.2 cygwin配置
 
 请参阅文章：[《惊艳的cygwin——Windows下的Linux命令行环境的配置和使用》](http://oldratlee.com/post/2012-12-22/stunning-cygwin)
+
+1. 文件权限问题： 显示文件权限为正常的-rw-r--r--
+2. vi配置： 让vi能识别语法
+3. 显示：ls、grep、dir输出彩色显示，文件大小以K、M、G显示
