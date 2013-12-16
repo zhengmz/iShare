@@ -1,0 +1,14 @@
+[user]
+	name = zhengmz-cygwin
+	email = zhengmz@hotmail.com
+[credential]
+	helper = cache --timeout=3600
+[color]
+	ui = auto
+[core]
+	quotepath = false
+[gui]
+	encoding = utf-8
+[i18n]
+	commitencoding = utf-8
+	logoutputencoding = utf-8
