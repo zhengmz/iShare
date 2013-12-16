@@ -36,3 +36,7 @@ Cygwin 使用大全
    - 方式二：将httpd变成windows下的一个服务，然后再运行 (需要先安装libapr-develop)
 
          /usr/sbin/httpd2-config 
+
+### 2.2 cygwin配置
+
+请参阅文章：《惊艳的cygwin——Windows下的Linux命令行环境的配置和使用》
