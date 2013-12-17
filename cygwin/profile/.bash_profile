@@ -67,6 +67,6 @@ alias ll='ls -l'                              # long list
 alias la='ls -A'                              # all but . and ..
 alias l='ls -CF'                              #
 
-alias vi="vim"
+alias vi='vim'
 set -o vi
 export EDITOR=vi
