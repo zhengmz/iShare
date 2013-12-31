@@ -20,19 +20,13 @@ SSH 使用笔记
 
 1. 远程信任登录 如：
 
-
-    ssh user1@www.example.com
-
+        ssh user1@www.example.com
 
 2. 直接执行远程命令
 
-
-    ssh user1@www.example.com "ls"
-
+        ssh user1@www.example.com "ls"
 
 3. 还可以实现与ssh相关的其他场景如git
 
-
-    git clone ssh://user1@www.example.com/opt/git/test.git
-
+        git clone ssh://user1@www.example.com/opt/git/test.git
 
