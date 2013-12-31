@@ -32,4 +32,4 @@ SSH 使用笔记
 
 ### 1.4 支持github.com
 
-将id_rsa.pub的内容拷贝到github.com的配置中即可
+在https://github.com/settings/ssh的配置中，新建一个ssh-key，把id_rsa.pub的内容拷贝进来即可
