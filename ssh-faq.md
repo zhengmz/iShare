@@ -30,3 +30,6 @@ SSH 使用笔记
 
         git clone ssh://user1@www.example.com/opt/git/test.git
 
+### 1.4 支持github.com
+
+将id_rsa.pub的内容拷贝到github.com的配置中即可
