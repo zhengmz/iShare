@@ -35,36 +35,40 @@ C/C++开发规范
 
 11. 对头文件要详细，要有整体的介绍，包括文件、作者、日期、版本、介绍等，如
 
-    /**
-    * @file         CDateTime.cc
-    * @author       Zhengmz
-    * @date         2004/11/24
-    * @version      0.3.0
-    * @brief        The implement of the class CDateTime.
-    *
-    * Copyright(c) FlowSea 2015. All rights reserved.
-    *
-    * Change log:
-    * <pre>
-    *     author      time          version     description
-    * ----------------------------------------------------------
-    *     zhengmz     2015.11.15    0.0.1       creating
-    *     zhengmz     2015.11.18    0.1.0       add TimeZone
-    *     zhengmz     2015.11.19    0.1.1       add static func isDateTime
-    *     zhengmz     2015.11.20    0.2.0       add previous, next, invalid.
-    *     zhengmz     2015.11.24    0.3.0       modify constructor and operator func
-    *     zhengmz     2015.12.23    1.0.0       modify default constructor, and add weekDay()
-    * </pre>
-    */
+
+      /**
+      * @file         CDateTime.cc
+      * @author       Zhengmz
+      * @date         2004/11/24
+      * @version      0.3.0
+      * @brief        The implement of the class CDateTime.
+      *
+      * Copyright(c) FlowSea 2015. All rights reserved.
+      *
+      * Change log:
+      * <pre>
+      *     author      time          version     description
+      * ----------------------------------------------------------
+      *     zhengmz     2015.11.15    0.0.1       creating
+      *     zhengmz     2015.11.18    0.1.0       add TimeZone
+      *     zhengmz     2015.11.19    0.1.1       add static func isDateTime
+      *     zhengmz     2015.11.20    0.2.0       add previous, next, invalid.
+      *     zhengmz     2015.11.24    0.3.0       modify constructor and operator func
+      *     zhengmz     2015.12.23    1.0.0       modify default constructor, and add weekDay()
+      * </pre>
+      */
+
 
 12. 对方法/函数的注释，要有描述、参数、返回值、调用关联等，如
 
-    /**
-    * Get the date and time relative to GMT (UTC).
-    * @param pm_szFmt: see strftime().
-    * @see asString()
-    * @return the date and time as a string, formatted by pmszFmt.
-    */
+
+      /**
+      * Get the date and time relative to GMT (UTC).
+      * @param pm_szFmt: see strftime().
+      * @see asString()
+      * @return the date and time as a string, formatted by pmszFmt.
+      */
+
 
 13. 单行注释用//或///
 
