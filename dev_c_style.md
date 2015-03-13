@@ -3,6 +3,8 @@ C/C++开发规范
 
 ### 文件格式
 
+0. 头文件的后缀全部用.h，C程序后缀用.c，C++程序后缀用.cc
+
 1. 文件应以Unicode (UTF-8) 编码保存
 
 2. 文件必须使用Unix换行符保存，每行应以LF结束，而不是CRLF
@@ -39,8 +41,8 @@ C/C++开发规范
       /**
       * @file         CDateTime.cc
       * @author       Zhengmz
-      * @date         2004/11/24
-      * @version      0.3.0
+      * @date         2015/12/23
+      * @version      1.0.0
       * @brief        The implement of the class CDateTime.
       *
       * Copyright(c) FlowSea 2015. All rights reserved.
