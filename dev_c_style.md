@@ -110,3 +110,6 @@ C/C++开发规范
 
 22. 如果使用命名空间namesapce，则在头文件和实现程序都必须使用namespace xxx { ... }
     而不只是使用using namespace xxx，避免在类中的友元函数friend显示“undefined reference to”
+
+23. 文件名尽量不重复，如主程序不要都取main.cc
+
