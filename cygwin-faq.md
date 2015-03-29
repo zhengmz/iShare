@@ -44,3 +44,20 @@ Cygwin 使用大全
 1. 文件权限问题： 显示文件权限为正常的-rw-r--r--
 2. vi配置： 让vi能识别语法
 3. 显示：ls、grep、dir输出彩色显示，文件大小以K、M、G显示
+
+三、其他
+----
+
+1. 有时，安装完应用后，在运行时出错，可能需要rebase一下
+
+  - 退出所有的终端
+  - 在windows中的运行
+
+     C:\Cygwin\bin\ash.exe
+
+  - 然后运行
+
+    rebaseall
+
+  - 重新进行Cygwin就可以了
+
