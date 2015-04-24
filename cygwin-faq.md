@@ -25,6 +25,8 @@ Cygwin 使用大全
 
         /usr/bin/cygserver-config
 
+   共享内存等应用也需要先运行server
+
 3. 再运行Apache server
 
   有两种方式：
