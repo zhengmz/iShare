@@ -69,7 +69,7 @@ Trac的使用说明
 
     - 安装完, 要把原有的登录模块取消, 如果是在网页admin上设置，先把本插件的登录模块打开，再取消：
 
-        trac.web.auth.loginmodule = disabled
+         trac.web.auth.loginmodule = disabled
 
     - 相应的，也要把tracd和web server中的权限认证关掉
 
