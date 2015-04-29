@@ -19,7 +19,9 @@ C/C++开发规范
 
 6. 类名：首字为大写C，多词首字为大写，如CDateTime
 
-  对枚举的声明也采用此方法，如enum DateTimeType
+  - 对枚举的声明也采用此方法，如enum DateTimeType
+
+  - 如果已经用命名空间来限定，可以不加C
 
 7. 方法/函数：最好用动词开头，首字小写，多词首字为大写，如asStringGMT
 
