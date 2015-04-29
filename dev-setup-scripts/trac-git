@@ -1,5 +1,5 @@
 # Setup in trac.ini
-1. enable component to support subversion:
+1. enable component to support git:
 
 [components]
 tracopt.versioncontrol.git.* = enabled

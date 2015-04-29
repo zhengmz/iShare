@@ -6,7 +6,7 @@
    e. install trac, using "easy_install trac"
 
 2. initenv a project
-   trac-admin /opt/trac/project1 initenv
+   trac-admin /opt/trac/rcs initenv
 
 3. Running Trac on a nginx Web Server
 
@@ -57,9 +57,9 @@ server {
 }
 
 4. Granting admin rights to the admin user:
-   trac-admin /opt/trac/project1 permission add zhengmz TRAC_ADMIN
+   trac-admin /opt/trac/rcs permission add zhengmz TRAC_ADMIN
 
-5. FAQ:
+FAQ:
    Q. 如果nginx报权限不够，可能的原因是selinux打开
    A: 先用sestatus -v查看, 如果打开，可临时关掉，再试试, 用lynx来浏览
 
