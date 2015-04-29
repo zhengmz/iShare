@@ -29,7 +29,7 @@ Trac的使用说明
 
    5a. 设置权限
 
-      chown -R apache.apache /opt/trac/rcs
+        chown -R apache.apache /opt/trac/rcs
 
    如果使用selinux，还需要设置
    Step1: chcon -R -t httpd_sys_rw_content_t /opt/trac
@@ -37,20 +37,20 @@ Trac的使用说明
    
    5b. 字符集, 修改trac.ini中
 
-      default_charset = utf-8
-      default_language = zh_CN
+        default_charset = utf-8
+        default_language = zh_CN
 
    5c. 设置邮件通知, 注意smtp_port不能用465, 只能用25
 
-      smtp_enabled = true
-      smtp_from = trac@flowsea.com
-      smtp_from_author = true
-      smtp_from_name = Trac管理者
-      smtp_password = password
-      smtp_port = 25
-      smtp_replyto = trac@flowsea.com
-      smtp_server = smtp.exmail.qq.com
-      smtp_user = trac@flowsea.com
+        smtp_enabled = true
+        smtp_from = trac@flowsea.com
+        smtp_from_author = true
+        smtp_from_name = Trac管理者
+        smtp_password = password
+        smtp_port = 25
+        smtp_replyto = trac@flowsea.com
+        smtp_server = smtp.exmail.qq.com
+        smtp_user = trac@flowsea.com
 
 6. 安装插件
 
@@ -66,6 +66,12 @@ Trac的使用说明
       - password_store需要人工配置, 根据用到的Store类型, 如account-manager.password_store = HtPasswdStore, 如果使用多个可直接在后面空格追加
       - 需要给管理员增加一个新的管理权限ACCTMGR_USER_ADMIN
       - 打开acct_mgr.notification.* = enabled, 支持通知
+
+    - 安装完, 要把原有的登录模块取消, 如果是在网页admin上设置，先把本插件的登录模块打开，再取消：
+
+        trac.web.auth.loginmodule = disabled
+
+    - 相应的，也要把tracd和web server中的权限认证关掉
 
     - 参考网址: http://trac-hacks.org/wiki/CookBook/AccountManagerPluginConfiguration
 
