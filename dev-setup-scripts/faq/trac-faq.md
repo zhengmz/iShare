@@ -25,22 +25,14 @@ Trac的使用说明
 
    发现在setup.py中没有"entry_points={'trac.plugins': ...}"的内容，修改后可用
 
-5. 配置
+5. 常规配置
 
-   5a. 设置权限
-
-        chown -R apache.apache /opt/trac/rcs
-
-   如果使用selinux，还需要设置
-   Step1: chcon -R -t httpd_sys_rw_content_t /opt/trac
-   Step2: semanage fcontext -a -t httpd_sys_rw_content_t "/opt/trac(/.*)?"
-   
-   5b. 字符集, 修改trac.ini中
+   5a. 字符集, 修改trac.ini中
 
         default_charset = utf-8
         default_language = zh_CN
 
-   5c. 设置邮件通知, 注意smtp_port不能用465, 只能用25
+   5b. 设置邮件通知, 注意smtp_port不能用465, 只能用25
 
         smtp_enabled = true
         smtp_from = trac@flowsea.com
@@ -61,7 +53,7 @@ Trac的使用说明
 
     - 配置注意：(大小写敏感)
 
-      - 虽然只使用到HtPasswdStore, 但不仅要安装HtPasswdHashMethod, 而且也要安装HtDigestHashMethod. 配置account-manager.bash_method = HtPasswdHashMethod
+      - 虽然只使用到HtPasswdStore, 但不仅要安装HtPasswdHashMethod, 而且也要安装HtDigestHashMethod.
       - 如果使用用户注册模块, 也需要把acct_mgr.register下的几个check都enabled才行
       - password_store需要人工配置, 根据用到的Store类型, 如account-manager.password_store = HtPasswdStore, 如果使用多个可直接在后面空格追加
       - 需要给管理员增加一个新的管理权限ACCTMGR_USER_ADMIN
@@ -69,7 +61,7 @@ Trac的使用说明
 
     - 安装完, 要把原有的登录模块取消, 如果是在网页admin上设置，先把本插件的登录模块打开，再取消：
 
-         trac.web.auth.loginmodule = disabled
+          trac.web.auth.loginmodule = disabled
 
     - 相应的，也要把tracd和web server中的权限认证关掉
 

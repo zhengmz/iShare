@@ -59,6 +59,15 @@ server {
 4. Granting admin rights to the admin user:
    trac-admin /opt/trac/rcs permission add zhengmz TRAC_ADMIN
 
+5. 设置权限
+
+   chown -R apache.apache /opt/trac/rcs
+
+   如果使用selinux，还需要设置
+   Step1: chcon -R -t httpd_sys_rw_content_t /opt/trac
+   Step2: semanage fcontext -a -t httpd_sys_rw_content_t "/opt/trac(/.*)?"
+   
+
 FAQ:
    Q. 如果nginx报权限不够，可能的原因是selinux打开
    A: 先用sestatus -v查看, 如果打开，可临时关掉，再试试, 用lynx来浏览
