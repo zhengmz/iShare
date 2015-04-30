@@ -33,6 +33,16 @@ Reference:
 Repository Administration [http://trac.edgewall.org/wiki/TracRepositoryAdmin]
 Git support in Trac [http://trac.edgewall.org/wiki/TracGit]
 
+4. 如果使用gitolite来管理git权限, 并且用nginx来转发tracd的请求, 需注意权限问题
+   假设repos库的用户是git用户, nginx的用户和组都是apache, 那么
+   a. 将git的主组设为apache
+   b. /home/git/.gitolite.rc中的改动点是：
+      - UMASK从0077改为0027
+      - 根据需要注释掉'daemon'和'gitweb'
+   c. 将所有需要与trac关联的repos库用户属组改为git.apache, 并确保apache可至少只读访问
+   d. 将需要关联代码的trac项目用户属组也改为git.apache, 并确保664和775, 属可写
+      因为web需要对trac项目写, 而git中的hook也要对trac项目可写
+
 FAQ:
 Q: ERROR: GIT control files missing in '/opt/git/gittest.git'
 A: if using SELinux, chcon -R -t httpd_sys_rw_content_t git
