@@ -1,0 +1,48 @@
+1. 安装有两种办法:
+   a. 直接下载, 解压缩到一个可运行php的目录下就可以了, 当然要先配置好config文件
+   b. 是通过epel库, 用yum命令来安装
+
+   第2种安装适合不清楚有哪些依赖库需要安装的, 可通过yum方式, 把依赖库都安装上去
+
+   两种结合一下，就是先用第2种安装, 把依赖库装好了, 再yum remove phpmyadmin, 然后
+用第1种来安装最新版本
+
+2. 在/etc/nginx/conf.d目录下配置phpmyadmin.conf, 如:
+
+	server {
+		listen       8080;
+		server_name  www.flowsea.com;
+		root   /usr/share/phpMyAdmin;
+		index index.php index.html index.htm;
+		access_log      /var/log/nginx/pma_access.log main;
+		error_log       /var/log/nginx/pma_error.log;
+		location ~ \.php$ {
+			fastcgi_pass   127.0.0.1:9000;
+			include fastcgi.conf;
+		}
+		location ~ /\.ht {
+			deny  all;
+		}
+	}
+
+3. 配置phpMyAdmin, 配置文件config.inc.php
+   如果是第1种安装的，就在安装的根目录下, 如果是第2种安装的, 目录在/etc/phpMyAdmin
+
+	$i++;
+	$cfg['Servers'][$i]['verbose'] = 'dbname';		//别名
+	$cfg['Servers'][$i]['host'] = 'dbname.domain.com';
+	$cfg['Servers'][$i]['port'] = '';
+	$cfg['Servers'][$i]['socket'] = '';
+	$cfg['Servers'][$i]['connect_type'] = 'tcp';
+	$cfg['Servers'][$i]['extension'] = 'mysqli';
+	$cfg['Servers'][$i]['auth_type'] = 'cookie';
+	$cfg['Servers'][$i]['user'] = '';
+	$cfg['Servers'][$i]['password'] = '';
+
+FAQ:
+
+Q: 出现权限: [crit] 7485#0: *41 open() "/var/lib/nginx/tmp/fastcgi/7/00/0000000007" failed (13: Permission denied) while reading upstream, client: 116.30.110.238, server: _, request: "GET /js/get_scripts.js.php?
+A: 由于使用nginx, 所以一开始的/var/lib/nginx的权限是nginx与nginx, 需要修改为apache.apache, 命令:
+   chown -R apache.apache /var/lib/nginx
+   待解决的是: 用lynx localhost:8080 在本机测试却是可以的
+
