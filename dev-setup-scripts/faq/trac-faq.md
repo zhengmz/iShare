@@ -44,6 +44,11 @@ Trac的使用说明
         smtp_server = smtp.exmail.qq.com
         smtp_user = trac@flowsea.com
 
+   5c. 解决搜索两个中文字出问题(提示少于3字符)
+
+        [search]
+        min_query_length = 0
+
 6. 安装插件
 
    6a. 用户管理插件AccountManagerPlugin
@@ -90,4 +95,10 @@ Trac的使用说明
 
           http://trac-hacks.org/wiki/ZoomQuiet
           http://trac-hacks.org/wiki/TracChineseTranslation
+
+7. 其他
+
+   a. wiki 转 html
+      有时候需要把纯文本格式的 Wiki 转成 HTML 页面，比如发表到博客什么的。 这时候可以使用这个方案：
+      http://trac.edgewall.org/wiki/CookBook/Scripts/StandaloneWiki2Html#no1
 
