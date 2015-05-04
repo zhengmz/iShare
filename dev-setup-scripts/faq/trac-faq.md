@@ -67,3 +67,27 @@ Trac的使用说明
 
     - 参考网址: http://trac-hacks.org/wiki/CookBook/AccountManagerPluginConfiguration
 
+   6b. 汉化插件zoomquiettranslation
+
+    - 下载源码: svn co http://trac-hacks.org/svn/zoomquiettranslation/trunk/0.11.x
+
+    - 安装:
+
+          trac-admin /path/to/your/env wiki load default-pages/
+
+    - 配置trac.ini(可选)
+
+          [mainnav]
+          wiki.href = /wiki/ZhWikiStart
+
+          [metanav]
+          help.href = /wiki/ZhTracGuide
+
+    - 复制ZhTracGuideToc.py到项目环境的plugins目录下
+      暂时不知道为什么，删除了也能使用
+
+    - 参考网址: 
+
+          http://trac-hacks.org/wiki/ZoomQuiet
+          http://trac-hacks.org/wiki/TracChineseTranslation
+
