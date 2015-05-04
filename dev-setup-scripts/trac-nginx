@@ -8,7 +8,11 @@
 2. initenv a project
    trac-admin /opt/trac/rcs initenv
 
-3. Running Trac on a nginx Web Server
+3. Generating the Trac deploy directory
+      trac-admin /opt/trac/svnproj deploy /tmp/deploy
+      mv /tmp/deploy/* /var/www
+
+4. Running Trac on a nginx Web Server
 
    有两种模式
    a. 是通过FastCGI方式来处理，但不支持多项目，需要自己在nginx中配置
@@ -62,10 +66,10 @@ server {
         }
 }
 
-4. Granting admin rights to the admin user:
+5. Granting admin rights to the admin user:
    trac-admin /opt/trac/rcs permission add zhengmz TRAC_ADMIN
 
-5. 设置权限
+6. 设置权限
 
    chown -R apache.apache /opt/trac/rcs
 
@@ -73,7 +77,7 @@ server {
    Step1: chcon -R -t httpd_sys_rw_content_t /opt/trac
    Step2: semanage fcontext -a -t httpd_sys_rw_content_t "/opt/trac(/.*)?"
 
-6. 编写启动脚本
+7. 编写启动脚本
 
    tracd.sh
 
@@ -106,6 +110,91 @@ function stop()
 
 $1
 
+8. 可以使用chkconfig来自动启动, 编写的脚本
+
+
+#! /bin/sh
+#
+# chkconfig:   - 86 14
+# description:	Trac Server Process Manager
+# processname: tracd
+# pidfile: /var/run/trac/inst.pid
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+# Check that networking is up.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+[ "$NETWORKING" = "no" ] && exit 0
+
+tracd="/usr/bin/tracd"
+prog=$(basename $tracd)
+lockfile="/var/lock/subsys/tracd"
+pidfile="/var/run/trac/inst"
+
+trac_instances="8000 8001"
+#trac_env="/opt/trac"
+trac_env="/opt/trac/rcs"
+#AUTH="--basic-auth=*,${trac_env}/web_auth,Flowsea"
+#ARGS="-e ${trac_env}"
+prog_args="--user=apache --group=apache -s ${trac_env}"
+PYTHON_EGG_CACHE="/opt/trac/.egg_cache"
+
+start(){
+	echo -n $"Starting $prog: "
+	export PYTHON_EGG_CACHE
+	for I in $trac_instances; do
+        	#${tracd} -d -p ${I} --pidfile=${PIDFILE}.${I} ${AUTH} --user=${USER} --group=${GROUP} ${ARGS}
+        	daemon ${tracd} -d -p ${I} --pidfile=${pidfile}.${I} ${prog_args}
+	done
+	retval=$?
+	echo
+	[ $retval -eq 0 ] && touch ${lockfile}
+	return $retval
+}
+
+stop(){
+	echo -n $"Stopping $prog: "
+	for x in `ls ${pidfile}.*`; do
+		#kill `cat ${x}`
+    		killproc -p $x $prog
+	done
+	retval=$?
+	echo
+	[ $retval -eq 0 ] && rm -f ${lockfile} ${pidfile}.*
+	return $retval
+}
+
+restart () {
+        stop
+        start
+}
+
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  status)
+	status -p ${pidfile}.*
+	RETVAL=$?
+	;;
+  restart)
+	restart
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|status|restart}"
+	RETVAL=2
+        ;;
+esac
+
+exit $RETVAL
 
 FAQ:
    Q. 如果nginx报权限不够，可能的原因是selinux打开
