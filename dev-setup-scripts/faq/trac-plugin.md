@@ -72,6 +72,9 @@
 18.SectionEditPlugin 编辑单个Section，比整个文件快
    网址：http://trac-hacks.org/wiki/SectionEditPlugin
 
+19.FullBlogPlugin 支持Blog
+   网址：http://trac-hacks.org/wiki/FullBlogPlugin
+
 插件安装的注意事项:
 
 1. 使用easy_insall 对所有trac环境有效，如
@@ -100,4 +103,5 @@
 参考网址：
    http://blog.csdn.net/gzlaiyonghao/article/details/6654027
    http://www.elias.cn/Develop/TracMini
+   http://trac-hacks.org/wiki/KTRAC
 
