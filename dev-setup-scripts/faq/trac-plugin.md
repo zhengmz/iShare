@@ -76,6 +76,9 @@
 19.FullBlogPlugin 支持Blog
    网址：http://trac-hacks.org/wiki/FullBlogPlugin
 
+20.TracMigratePlugin 迁移工具，可以在不同数据库之间迁移
+   网址：http://trac-hacks.org/wiki/TracMigratePlugin
+
 插件安装的注意事项:
 
 1. 使用easy_insall 对所有trac环境有效，如

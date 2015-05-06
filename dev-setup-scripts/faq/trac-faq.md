@@ -27,12 +27,12 @@ Trac的使用说明
 
 5. 常规配置
 
-   5a. 字符集, 修改trac.ini中
+   a. 字符集, 修改trac.ini中
 
         default_charset = utf-8
         default_language = zh_CN
 
-   5b. 设置邮件通知, 注意smtp_port不能用465, 只能用25
+   b. 设置邮件通知, 注意smtp_port不能用465, 只能用25
 
         smtp_enabled = true
         smtp_from = trac@flowsea.com
@@ -44,14 +44,16 @@ Trac的使用说明
         smtp_server = smtp.exmail.qq.com
         smtp_user = trac@flowsea.com
 
-   5c. 解决搜索两个中文字出问题(提示少于3字符)
+   c. 解决搜索两个中文字出问题(提示少于3字符)
 
         [search]
         min_query_length = 0
 
 6. 安装插件
 
-   6a. 用户管理插件AccountManagerPlugin
+   <更多插件请参考 trac-plugin.md>
+
+   a. 用户管理插件AccountManagerPlugin
 
     - 安装: easy_install https://trac-hacks.org/svn/accountmanagerplugin/tags/acct_mgr-0.4.4
             安装之前要有svn
@@ -72,7 +74,7 @@ Trac的使用说明
 
     - 参考网址: http://trac-hacks.org/wiki/CookBook/AccountManagerPluginConfiguration
 
-   6b. 汉化插件zoomquiettranslation
+   b. 汉化插件zoomquiettranslation
 
     - 下载源码: svn co http://trac-hacks.org/svn/zoomquiettranslation/trunk/0.11.x
 
@@ -101,4 +103,9 @@ Trac的使用说明
    a. wiki 转 html
       有时候需要把纯文本格式的 Wiki 转成 HTML 页面，比如发表到博客什么的。 这时候可以使用这个方案：
       http://trac.edgewall.org/wiki/CookBook/Scripts/StandaloneWiki2Html#no1
+
+   b. 在wiki或ticket中增加附件后，如何删除
+      只能在命令行执行：
+      trac-admin /opt/trac/rcs attachment remove wiki:BizGlossary logo_old.png
+      另外，删除保存在环境目录下的files
 
