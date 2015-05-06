@@ -14,6 +14,7 @@
    网址：http://trac-hacks.org/wiki/RobotsTxtPlugin
 
 4. AutocompleteUsersPlugin 账号输入自动完成
+   需要重新生成deploy
    网址: http://trac-hacks.org/wiki/AutocompleteUsersPlugin
 
 5. TracWysiwygPlugin 给非技术人员使用，达到了部分的“所见即所得”效果
