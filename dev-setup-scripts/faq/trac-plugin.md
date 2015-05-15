@@ -79,6 +79,16 @@
 20.TracMigratePlugin 迁移工具，可以在不同数据库之间迁移
    网址：http://trac-hacks.org/wiki/TracMigratePlugin
 
+21.MarkdownMacro 在wiki以代码内嵌方式支持Markdown格式
+   依赖python markdown: easy_install markdown
+   python markdown又依赖importlib: easy_install importlib
+   重启tracd 服务
+   装完以后，发现意义不大，可以使用工具将md转为trac的wiki，再导入
+   网址：http://trac-hacks.org/wiki/MarkdownMacro
+
+22.TracHtmlNotificationPlugin 以HTML格式进行邮件通知
+   网址：http://trac-hacks.org/wiki/TracHtmlNotificationPlugin
+
 插件安装的注意事项:
 
 1. 使用easy_insall 对所有trac环境有效，如
