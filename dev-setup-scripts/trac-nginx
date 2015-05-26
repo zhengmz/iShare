@@ -5,12 +5,17 @@
    d. install Babel, support for internationalization
    e. install trac, using "easy_install trac"
 
+   if using mysql, must intall MySQL-python ( yum install )
+
 2. initenv a project
    trac-admin /opt/trac/rcs initenv
 
 3. Generating the Trac deploy directory
       trac-admin /opt/trac/svnproj deploy /tmp/deploy
-      mv /tmp/deploy/* /var/www
+      mv /tmp/deploy /var/www/trac
+
+     /var/www/htdocs/favicon.ico
+     /var/www/htdocs/site/flowsea_logo.png
 
 4. Running Trac on a nginx Web Server
 
