@@ -3,6 +3,9 @@
 0. tracwiki2html.py 将wiki转化成html
    网址：http://trac.edgewall.org/wiki/CookBook/Scripts/StandaloneWiki2Html#no1
 
+0. AccountManagerPlugin 用户管理
+   网址: https://trac-hacks.org/wiki/AccountManagerPlugin
+
 1. TracChineseTranslation Wiki汉化
    网址: http://trac-hacks.org/wiki/ZoomQuiet
          http://trac-hacks.org/wiki/TracChineseTranslation
