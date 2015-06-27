@@ -98,4 +98,15 @@
 
     echo 'unset SSH_ASKPASS' >> ~/.bashrc && source ~/.bashrc
 
+### 2)删除子模块, 分四步:
+
+  第一步: 根据路径删除子模块的记录
+
+     git rm --cached [path]
+
+  第二步: 编辑“.gitmodules”文件，将子模块的相关配置节点删除掉
+
+  第三步: 编辑“ .git/config”文件，将子模块的相关配置节点删除掉
+
+  第四步: 手动删除子模块残留的目录
 
