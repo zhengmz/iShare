@@ -30,6 +30,7 @@
    网址: http://trac-hacks.org/wiki/CustomFieldAdminPlugin
 
 7. 动态生成图形
+   需先安装 yum install graphviz
    网址：http://trac-hacks.org/wiki/GraphvizPlugin
 
 8. TracSqlPlugin 实现SQL功能支持 SQLite、MySQL、 PostgreSQL 
@@ -71,6 +72,7 @@
    网址：http://trac-hacks.org/wiki/FineGrainedPageAuthzEditorPlugin
 
 17.TracTicketTemplatePlugin Ticket模板定义
+   需要 easy_install simplejson 
    网址：http://trac-hacks.org/wiki/TracTicketTemplatePlugin
 
 18.SectionEditPlugin 编辑单个Section，比整个文件快
