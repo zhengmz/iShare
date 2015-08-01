@@ -33,3 +33,15 @@ SSH 使用笔记
 ### 1.4 支持github.com
 
   在 https://github.com/settings/ssh 的配置中，新建一个ssh-key，把id_rsa.pub的内容拷贝进来即可
+
+二、其他问题
+----
+
+### 2.1 目录文件权限问题
+
+1. 从其他机器拷贝authorized_keys和id_rsa时，需要注意的权限，否则可能无法实现信任登录
+
+    目录.ssh 700
+    文件id_rsa 600
+    文件authorized_keys 644
+
