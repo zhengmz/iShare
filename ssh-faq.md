@@ -45,3 +45,14 @@ SSH 使用笔记
     文件id_rsa 600
     文件authorized_keys 644
 
+### 2.2 配置问题
+
+sshd的配置文件在/etc/ssh/sshd_config
+
+1. 限制root用户从远程ssh访问: PermitRootLogin=no
+
+2. 解决自动断开的问题:
+
+   1) 修改/etc/profile中的TMOUT: 设置为0, 或注释掉
+
+   2) 修改配置ClientAliveInterval为60, ClientAliveCountMax为3
