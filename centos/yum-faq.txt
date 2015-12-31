@@ -1,0 +1,75 @@
+CentOS 7手工创建自己的YUM仓库
+
+一、简介    
+    在linux系统上安装软件有三种方式，一、源代码形式，绝大多数开源软件都是直接以源代码的形式发布，一般被打包成tar.gz的归档压缩文件，这种源代码形式的程序需要编译成二进制形式之后才能够运行使用，这种形式虽然兼容性、可控性较好，但使用起来较为麻烦，有大量的依赖关系需要解决；二、RPM安装包，RPM通过将源代码基于特定平台系统编译成可执行文件，并保存依赖关系，简化了开源软件的安装，但依然需要手工解决依赖关系；三、YUM软件管理，YUM设计的主要目的就是自动解决RPM的依赖关系，可以对RPM进行分组，引入仓库（repo）概念并支持多个仓库，配置比较简单。
+    YUM使用仓库保存管理RPM软件包，仓库的配置文件保存在/etc/yum.repos.d/目录下，CentOS自带的配置文件如下：
+[root@localhost ~]# cd /etc/yum.repos.d/
+[root@localhost yum.repos.d]# ll
+total 24
+-rw-r--r--. 1 root root 1664 Mar 31 15:27 CentOS-Base.repo
+-rw-r--r--. 1 root root 1309 Mar 31 15:27 CentOS-CR.repo
+-rw-r--r--. 1 root root  649 Mar 31 15:27 CentOS-Debuginfo.repo
+-rw-r--r--. 1 root root  290 Mar 31 15:27 CentOS-fasttrack.repo
+-rw-r--r--. 1 root root 1331 Mar 31 15:27 CentOS-Sources.repo
+-rw-r--r--. 1 root root 1002 Mar 31 15:27 CentOS-Vault.repo
+    将这几个文件删除，rm -rf CentOS* 或则移除该文件夹 mv CentOS* /yum。
+二、手工配置YUM仓库
+    1、将所有rpm软件包拷贝到一个文件夹下，这里我们使用CentOS 7自带的rpm软件包，在VMware物理机无法联网的情况下可以使用。将CentOS7安装镜像挂载在CentOS下，文件默认路径在/run/media/centostest/下，CentOS6保存在/media/下，这里centostest为自己的用户名，rpm软件包保存在镜像文件Packages文件夹下。
+    建立一个文件夹并拷贝，拷贝时间会比较长，虚拟光盘的话会快一点。
+[root@localhost ~]# cd /
+[root@localhost /]# mkdir yum-packages
+[root@localhost /]# cp -rv /run/media/centostest/CentOS\ 7\ x86_64/Packages/* /yum-packages/
+    2、通过rpm命令安装createrepo软件，createrepo软件包就包含在前面拷贝的rpm文件内。
+         安装createrepo软件，软件名称通过Tab键可以自动补全。
+[root@localhost /]# cd yum-packages/
+[root@localhost yum-packages]# rpm -ivh createrepo-0.9.9-23.el7.noarch.rpm 
+warning: createrepo-0.9.9-23.el7.noarch.rpm: Header V3 RSA/SHA256 Signature, key ID f4a80eb5: NOKEY
+Preparing...                          ################################# [100%]
+ package createrepo-0.9.9-23.el7.noarch is already installed
+    3、运行createrepo命令建立索引
+ 	
+createrepo /yum-packages/
+完成后会在yum-packages文件夹下建立一个repodata的文件夹，里面保存索引信息。
+    4、添加配置文件
+    在/etc/yum.repos.d/文件夹下添加配置文件。
+    
+[root@localhost yum-packages]# cd /etc/yum.repos.d/
+[root@localhost yum.repos.d]# vim ownyum.repo
+[root@localhost yum.repos.d]# cat ownyum.repo 
+[centos]
+name = centos yum
+baseurl = file:///yum-packages/
+[root@localhost yum.repos.d]#
+这里进行了最简单的配置，[centos]、name 任意取名字就行，enabled、gpgcheck可配置也可不配置。
+    5、清空YUM Cache
+    使用yum clean all命令清空，并用yum list命令查看yum库
+[root@localhost yum.repos.d]# yum clean all
+Loaded plugins: fastestmirror, langpacks
+Cleaning repos: centos
+Cleaning up everything
+Cleaning up list of fastest mirrors
+[root@localhost yum.repos.d]# yum list
+可以看到自己建立的yum仓库信息
+ 	
+xorg-x11-xbitmaps.noarch               1.1.1-6.el7                     centos   
+xpp3.noarch                            1.1.3.8-11.el7                  centos   
+xrestop.x86_64                         0.4-14.el7                      centos   
+xsane-common.x86_64                    0.999-9.el7                     centos   
+xsane-gimp.x86_64                      0.999-9.el7                     centos   
+xsettings-kde.x86_64                   0.12.3-7.el7                    centos   
+xsom.noarch                            0-10.20110809svn.el7            centos   
+xterm.x86_64                           295-3.el7                       centos   
+xulrunner.x86_64                       31.4.0-1.el7.centos             centos   
+xz-devel.x86_64                        5.1.2-9alpha.el7                centos   
+yp-tools.x86_64                        2.14-3.el7                      centos   
+ypbind.x86_64                          3:1.37.1-7.el7                  centos   
+ypserv.x86_64                          2.31-8.el7                      centos   
+yum-plugin-aliases.noarch              1.1.31-29.el7                   centos   
+yum-plugin-changelog.noarch            1.1.31-29.el7                   centos   
+yum-plugin-tmprepo.noarch              1.1.31-29.el7                   centos   
+yum-plugin-verify.noarch               1.1.31-29.el7                   centos   
+yum-plugin-versionlock.noarch          1.1.31-29.el7                   centos   
+zlib-devel.x86_64                      1.2.7-13.el7                    centos   
+zsh.x86_64                             5.0.2-7.el7                     centos   
+zziplib.x86_64                         0.13.62-5.el7                   centos
+这里的centos为[centos]里面的名字。
