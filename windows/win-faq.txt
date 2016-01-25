@@ -5,3 +5,9 @@
    4) 增加everyone为读取与执行
    5) 选择"启用继承", 并复选"使用可从此对象继承的权限项目替换所有子对象的权限项目"
    6) 删除之前系统遗留下来的权限
+
+   7) 如果还用cygwin通过git管理版本库，则需要在cygwin下运行命令来恢复:
+      find . -name .git -prune -o -type d|xargs chmod 755
+      find . -name .git -prune -o -type f|xargs chmod 644
+      find . -name .git -prune -o -type f|xargs git checkout --
+
