@@ -7,7 +7,11 @@
    6) 删除之前系统遗留下来的权限
 
    7) 如果还用cygwin通过git管理版本库，则需要在cygwin下运行命令来恢复:
-      find . -name .git -prune -o -type d|xargs chmod 755
-      find . -name .git -prune -o -type f|xargs chmod 644
-      find . -name .git -prune -o -type f|xargs git checkout --
+      find . -type d -print | xargs chmod 755
+      find . -type f -print | xargs chmod 644
+      find . -name .git -prune -o -type f -print | xargs git checkout --
+      注: find语句后面要加上-print，否则也会把.git列出来，或者用以下语句：
+      find . -type d -exec chmod 755 {} \;
+      find . -type f -exec chmod 644 {} \;
+      find . -name .git -prune -o -type f -exec git checkout -- {} \;
 
