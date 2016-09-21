@@ -91,3 +91,4 @@ Cygwin 使用大全
      none /cygdrive cygdrive binary,noacl,posix=0,user 0 0
 
    关闭所有cygwin进程，再重启cygwin命令行。
+   但对需要明确644和755的文件就无效，所以也是一个鸡肋
