@@ -1,7 +1,8 @@
 BoldAsFont=no
+Font=Consolas
 FontHeight=14
 Locale=zh_CN
 Charset=UTF-8
-ForegroundColour=0,255,0
-Term=xterm
+Term=xterm-256color
 CursorType=block
+ForegroundColour=0,255,0

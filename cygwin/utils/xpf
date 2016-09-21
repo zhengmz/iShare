@@ -1,0 +1,19 @@
+#!/bin/bash
+#用explorer打开并选择指定的文件或文件夹，默认打开当前目录
+ 
+cygwin=false
+case "`uname`" in
+CYGWIN*) cygwin=true;;
+esac
+ 
+if [ "$1" = "" ]; then
+    XPATH=.
+else
+    XPATH=$1
+    if $cygwin; then
+        XPATH="$(cygpath -C ANSI -w "$XPATH")";
+    fi
+fi
+
+explorer '/select,'$XPATH
+

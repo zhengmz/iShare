@@ -63,3 +63,31 @@ Cygwin 使用大全
 
   - 重新进行Cygwin就可以了
 
+2. Windows命令的乱码
+
+   Windows命令的输出中文乱码，原因是Windows命令输出的编码是GBK。cygwin控制台mintty的编码缺省是UTF-8。mintty的选项的【Text】把编码改成GBK即可。
+
+3. 同步Windows系统用户
+
+    mkpasswd -l > /etc/passwd
+    mkgroup -l > /etc/group
+
+   如果有Domain的话，需要加上-d domainname 
+
+4. 自动补全不区分大小写
+
+   ~/.bashrc 文件中添加：
+
+      shopt -s nocaseglob
+
+   ~/.inputrc 文件中添加：
+
+      set completion-ignore-case on
+
+5. 修改文件权限问题
+
+   编辑 /etc/fstab ，在末尾加上下面的一行：
+
+     none /cygdrive cygdrive binary,noacl,posix=0,user 0 0
+
+   关闭所有cygwin进程，再重启cygwin命令行。

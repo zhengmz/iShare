@@ -1,6 +1,6 @@
 [user]
-	name = zhengmz-cygwin
-	email = zhengmz@hotmail.com
+	name = zhengmz
+	email = zhengmz@flowsea.com
 [credential]
 	helper = cache --timeout=3600
 [color]
@@ -15,3 +15,10 @@
 	logoutputencoding = utf-8
 [push]
 	default = simple
+[alias]
+	co = checkout
+	br = branch
+	ci = commit
+	st = status
+	unstage = reset HEAD --
+	last = log -1 HEAD

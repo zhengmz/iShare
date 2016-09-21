@@ -1,0 +1,31 @@
+" 显示行号
+set number
+
+" 搜索到内容高亮
+set hlsearch
+
+" 编辑器内部编码
+set encoding=utf-8
+set langmenu=zh_CN.UTF-8
+language message zh_CN.UTF-8
+
+" 缺省文件编码和自动识别文件编码顺序
+set fileencoding=utf-8
+set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
+
+" 在TERM中显示的编码，不设同encoding
+"  在Cygwin中运行windows命令，其输出是GBK格式
+"  但影响git log等本身命令输出，故不推荐使用
+"要跟.minttyrc中的Charset对应
+"set termencoding=GBK
+
+" 配置backspace键，缺省backspace不起作用
+set nocompatible
+set backspace=indent,eol,start
+
+" 用左移键回到上一行的行尾，在行尾用右移键能够到下一行的开头
+" 通过设置whichwrap开启这项功能
+set whichwrap=b,s,h,l,<,>,[,]
+ 
+" 打开语法高亮。cygwin的vi缺省没有打开
+syntax on

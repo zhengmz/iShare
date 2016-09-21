@@ -1,0 +1,15 @@
+# 在.inputrc中增加使用
+
+# 不区分大小的自动补全，与.bashrc配合使用
+$if Bash
+  # Filename completion/expansion
+  set completion-ignore-case on
+$endif
+
+# 配置按单词移动/删除
+# Ctrl-Arrow Key
+"\e[1;5C": forward-word
+"\e[1;5D": backward-word
+# Ctrl-Backspace, Ctrl-Delete
+"\e[3;5~": kill-word
+"\C-_": backward-kill-word
