@@ -1,4 +1,4 @@
 # 在.bashrc中增加使用
 
-#禁用大小写区分，与.inputrc配合使用实际不区分大小写命令和文件名称补全
+#禁用大小写区分，与.inputrc配合使用
 shopt -s nocaseglob

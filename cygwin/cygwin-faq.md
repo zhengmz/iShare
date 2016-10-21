@@ -63,6 +63,8 @@ Cygwin 使用大全
 
   - 重新进行Cygwin就可以了
 
+    不过，最好还是用cygwin的setup来更新和安装应用，用apt-cyg会出现一些未知问题
+
 2. Windows命令的乱码
 
    Windows命令的输出中文乱码，原因是Windows命令输出的编码是GBK。cygwin控制台mintty的编码缺省是UTF-8。mintty的选项的【Text】把编码改成GBK即可。
