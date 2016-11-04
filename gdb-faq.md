@@ -16,7 +16,7 @@ gdb使用问题集锦
 
    - 然后设置solib-search-path
 
-      set solib-search-path /opt/rcs/module
+      set solib-search-path /opt/rcs/modules
 
 
 二、其他说明
