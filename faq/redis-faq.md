@@ -19,11 +19,13 @@ redis使用问题集锦
 
    - 如有多个实例, 则在每个实例中增加
 
+   - 还有一种办法是修改/etc/systemd/system/redis.service.d/limit.conf
+
 二、其他说明
 ----
 
 ### 2.1 redis.conf中的daemonize
 
 1. 只对命令行redis-server有效, 使用systemctl时无效
-2. systemctl时，要加上--daemonize no
+2. systemctl时，如果要加上--daemonize yes, 必须在service中指定PIDFile = /data/redis/redis.pid
 
