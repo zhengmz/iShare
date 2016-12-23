@@ -21,6 +21,45 @@ redis使用问题集锦
 
    - 还有一种办法是修改/etc/systemd/system/redis.service.d/limit.conf
 
+### 1.2 redis.log中出现overcommit_memory的告警
+
+1. 即时生效:
+
+    echo 1 > /proc/sys/vm/overcommit_memory
+
+2. 永久生效:
+   在/etc/sysctl.conf中增加:
+
+    vm.overcommit_memory = 1
+
+### 1.3 redis.log中出现somaxconn的告警
+
+1. 即时生效:
+
+    echo 1024 > /proc/sys/net/core/somaxconn
+
+2. 永久生效:
+   在/etc/sysctl.conf中增加:
+
+    net.core.somaxconn = 1024
+
+### 1.4 redis.log中出现THP的告警
+
+1. 即时生效：
+
+    echo never > /sys/kernel/mm/transparent_hugepage/enabled
+
+2. 永久生效:
+   在/etc/rc.local中增加:
+
+    # For redis
+    在/etc/rc.local增加
+    if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+        echo never > /sys/kernel/mm/transparent_hugepage/enabled
+    fi
+
+  并且要设置成chmod +x /etc/rc.local
+
 二、其他说明
 ----
 
