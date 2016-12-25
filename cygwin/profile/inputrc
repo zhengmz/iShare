@@ -1,5 +1,11 @@
 # 在.inputrc中增加使用
 
+# Allow 8-bit input/output
+set meta-flag on
+set convert-meta off
+set input-meta on
+set output-meta on
+
 # 不区分大小的自动补全，与.bashrc配合使用
 $if Bash
   # Filename completion/expansion
