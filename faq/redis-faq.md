@@ -68,3 +68,10 @@ redis使用问题集锦
 1. 只对命令行redis-server有效, 使用systemctl时无效
 2. systemctl时，如果要加上--daemonize yes, 必须在service中指定PIDFile = /data/redis/redis.pid
 
+三、集群问题
+
+1. 3.2.3建立集群时, 总是提示连接不了node, 主要原因是节点设置了密码, redis-trib.rb无法识别
+   需要修改/usr/local/share/gems/gems/redis-3.3.3/lib/redis/client.rb中的":password"
+   而且各节点的密码必须一致，且也要设置masterauth
+
+
