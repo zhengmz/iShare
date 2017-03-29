@@ -1,0 +1,19 @@
+{
+    "server":"0.0.0.0",
+    "workers":5,
+    "port_password":
+    {
+        "42701": "password1",
+        "42702": "password1",
+        "42703": "password1"
+    },
+    "_comment":
+    {
+        "42701": "Company",
+        "42702": "Home",
+        "42703": "John"
+    },
+    "timeout":600,
+    "method":"aes-256-cfb"
+}
+
