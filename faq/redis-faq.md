@@ -74,4 +74,11 @@ redis使用问题集锦
    需要修改/usr/local/share/gems/gems/redis-3.3.3/lib/redis/client.rb中的":password"
    而且各节点的密码必须一致，且也要设置masterauth
 
+三、集群问题
+----
+
+### 3.1 Redis::CommandError: CROSSSLOT Keys in request don't hash to the same slot
+
+建议解决： 在key名中增加{XXXX}，这样redis将仅使用XXXX来计算slot的位置
+
 
