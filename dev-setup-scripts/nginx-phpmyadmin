@@ -46,3 +46,5 @@ A: 由于使用nginx, 所以一开始的/var/lib/nginx的权限是nginx与nginx,
    chown -R apache.apache /var/lib/nginx
    待解决的是: 用lynx localhost:8080 在本机测试却是可以的
 
+Q: 出现: PHP Fatal error:  Call to undefined function __() in /usr/share/phpM yAdmin/libraries/core.lib.php on line 245
+A: session.save_path(/var/lib/php/session)的目录权限不对
